@@ -95,27 +95,25 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   case 1:
     // tealish
     rgb_matrix_enable_noeeprom();
-    rgbHSVlast.h+=56;
-    rgb_matrix_sethsv_noeeprom(rgbHSVlast);
+    rgb_matrix_mode_noeeprom(rgbModelast);
+    rgb_matrix_sethsv_noeeprom(rgbHSVlast+56);
     break;
   case 2:
     // greenish
     rgb_matrix_enable_noeeprom();	
-    rgbHSVlast.h+=112;
-    rgb_matrix_sethsv_noeeprom(rgbHSVlast);
+    rgb_matrix_mode_noeeprom(rgbModelast);
+    rgb_matrix_sethsv_noeeprom(rgbHSVlast)+112;
     break;
   case 3:
     // orangeish
     rgb_matrix_enable_noeeprom();
-    //rbhHSVlast.h+=56;
     rgb_matrix_sethsv_noeeprom(rgbHSVlast);
     break;
   default:
     // if not touched, purpleish
     //If enabled, set white
     if (rgb_matrix_is_enabled()) {
-		  rgbHSVlast.h+=168; 
-      rgb_matrix_sethsv_noeeprom(rgbHSVlast);
+      rgb_matrix_sethsv_noeeprom(rgbHSVlast+168);
 	  } else { //Otherwise go back to disabled
 		  rgb_matrix_disable_noeeprom();
 	  }
