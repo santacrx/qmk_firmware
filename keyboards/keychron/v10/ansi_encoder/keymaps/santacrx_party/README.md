@@ -14,4 +14,4 @@ This is my customization for my v10 to maximize the capabilities plus visuals I 
 - [x] Commit of first working version (2024-04-05)
 - [x] Change base color to other than white 
 - [x] Build a way to keep lightning changes made in L3 stick for L0 and not reset to the default
-- [ ] Party mode caps lock or numpad as seen [here]{http://daedalusrising.com/2019/10/07/the-massdrop-alt-custom-animations-and-more/}
+- [x] Party mode caps lock or numpad as seen [here]{http://daedalusrising.com/2019/10/07/the-massdrop-alt-custom-animations-and-more/}
