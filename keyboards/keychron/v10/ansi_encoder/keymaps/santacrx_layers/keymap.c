@@ -87,9 +87,11 @@ void eeconfig_init_user(void) {  // EEPROM is getting reset!
   rgb_matrix_mode(RGB_MATRIX_SOLID_REACTIVE); // set to breathing by default
 }
 
+static uint8_t rgbModelast;
+static HSV rgbHSVlast;
+   
 layer_state_t layer_state_set_user(layer_state_t state) {
-  uint8_t rgbModelast = rgb_matrix_get_mode();
-  HSV rgbHSVlast = rgb_matrix_get_hsv();
+  //static effect_params_t* params;
   switch(biton32(state)) {
   case 1:
     // tealish
@@ -106,12 +108,44 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   case 3:
     // orangeish
     rgb_matrix_enable_noeeprom();
-    rgb_matrix_sethsv_noeeprom(rgbHSVlast.h,rgbHSVlast.s,rgbHSVlast.v);
+    rgb_matrix_mode_noeeprom(rgbModelast);
+    rgb_matrix_sethsv_noeeprom(rgbHSVlast.h-168,rgbHSVlast.s,rgbHSVlast.v);
+/*
+    RGB_MATRIX_USE_LIMITS(led_min, led_max);
+
+    HSV hsv  = rgb_matrix_config.hsv;
+    RGB rgb1 = hsv_to_rgb(hsv);
+    hsv.h += rgb_matrix_config.speed;
+    RGB rgb2 = hsv_to_rgb(hsv);
+
+    
+    //if (get_highest_layer(state) > 0) {
+        //uint8_t layer = get_highest_layer(state);
+
+        for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
+            for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
+                uint8_t index = g_led_config.matrix_co[row][col];
+
+                if (index >= led_min && index < led_max && index != NO_LED && HAS_FLAGS(g_led_config.flags[index], 0x04) &&
+                keymap_key_to_keycode(_NUM, (keypos_t){col,row}) > KC_TRNS) {
+                    rgb_matrix_set_color(index, rgb1.r, rgb1.g, rgb1.b);
+                }
+                if (!HAS_FLAGS(g_led_config.flags[index], 0x04)) {
+                    rgb_matrix_set_color(index, rgb2.r, rgb2.g, rgb2.b);
+                }
+            }
+        }
+        rgb_matrix_check_finished_leds(led_max);
+*/
+    //}
     break;
   default:
     // if not touched, purpleish
     //If enabled, set white
     if (rgb_matrix_is_enabled()) {
+      rgbModelast = rgb_matrix_get_mode();
+      rgbHSVlast = rgb_matrix_get_hsv();
+      rgb_matrix_mode_noeeprom(rgbModelast);
       rgb_matrix_sethsv_noeeprom(rgbHSVlast.h+168,rgbHSVlast.s,rgbHSVlast.v);
 	  } else { //Otherwise go back to disabled
 		  rgb_matrix_disable_noeeprom();
