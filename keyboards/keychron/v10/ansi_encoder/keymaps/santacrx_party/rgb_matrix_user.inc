@@ -14,9 +14,13 @@ static HSV party_math(HSV hsv, uint8_t i, uint8_t time) {
     return hsv;
 }
 
-static bool party_keylights(effect_params_t* params) {
+static uint8_t current_layer = get_highest_layer(layer_state);
+
+static bool party_keylights(effect_params_t* params, current_layer) {
     uint8_t time = scale16by8(g_rgb_timer, qadd8(rgb_matrix_config.speed / 4, 1));
-    uint8_t layer = get_highest_layer(layer_state);
+    uint8_t layer = current_layer;
+
+    RGB_MATRIX_USE_LIMITS(led_min, led_max);
 
     HSV hsv  = rgb_matrix_config.hsv;
     RGB rgb1 = rgb_matrix_hsv_to_rgb(hsv);
