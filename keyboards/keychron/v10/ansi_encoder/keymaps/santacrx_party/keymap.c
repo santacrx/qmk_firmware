@@ -39,7 +39,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,      KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,            KC_DEL,
         _______,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,            KC_HOME,
         _______,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),           KC_END,
-        _______,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_RCTL,  KC_UP,
+        _______,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RCTL(KC_APP),  KC_UP,
         _______,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   MO(_FN1),                      KC_SPC,             MO(_FN2),                     KC_LEFT,  KC_DOWN,  KC_RGHT),
 
     [_FN1] = LAYOUT_ansi_89(
@@ -97,7 +97,7 @@ bool party_effect_i(effect_params_t* params, HSV effect_func) {
             uint8_t i = g_led_config.matrix_co[row][col];
 
             if (i >= led_min && i < led_max && i != NO_LED && HAS_FLAGS(g_led_config.flags[i], 0x04) &&
-            keymap_key_to_keycode(layer, (keypos_t){col,row}) > KC_TRNS) {
+            keymap_key_to_keycode(_NUM, (keypos_t){col,row}) > KC_TRNS) {
                 RGB_MATRIX_TEST_LED_FLAGS();
                 RGB rgb = rgb_matrix_hsv_to_rgb(effect_func(rgb_matrix_config.hsv, i, time));
                 rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);

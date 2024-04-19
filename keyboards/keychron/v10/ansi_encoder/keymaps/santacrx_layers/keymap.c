@@ -39,7 +39,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,      KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,            KC_DEL,
         _______,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,            KC_HOME,
         _______,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),           KC_END,
-        _______,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_RCTL,  KC_UP,
+        _______,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RCTL(KC_APP),  KC_UP,
         _______,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   MO(_FN1),                      KC_SPC,             MO(_FN2),                     KC_LEFT,  KC_DOWN,  KC_RGHT),
 
     [_FN1] = LAYOUT_ansi_89(
@@ -59,7 +59,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   _______,                       KC_SPC,             _______,                      KC_LEFT,  KC_DOWN,  KC_RGHT),
 
     [_NUM] = LAYOUT_ansi_89(
-        KC_MS_BTN1,   RGB_TOG,  		RGB_HUD,  	   RGB_HUI,  	   RGB_SAD,    RGB_SAI,  RGB_VAD,   RGB_VAI,  RGB_RMOD,  RGB_MOD,   KC_NO,  	KC_NO,    KC_NO,   KC_NO,   _______,            _______,
+        KC_MS_BTN1,   RGB_TOG,  		RGB_HUD,  	   RGB_HUI,  	   RGB_SAD,    RGB_SAI,  RGB_VAD,   RGB_VAI,  RGB_RMOD,  RGB_MOD,  RGB_SPD,  RGB_SPI,    KC_NO,   KC_NO,   _______,            _______,
         KC_MS_ACCEL0,  KC_NO, 	     KC_NO,         KC_NO,        KC_NO,      KC_NO,    KC_NO,     KC_NO,   KC_PSLS,   KC_PAST,  KC_PMNS,   KC_NO,   _______, _______,  _______,            _______,
         KC_MS_ACCEL1, _______,    	 KC_NO,        KC_MS_UP,  	  KC_NO,	    KC_NO,    KC_NO,     KC_P7,    KC_P8,     KC_P9,   KC_PPLS,   KC_NO,    KC_NO,    KC_NO,  _______,            _______,
         KC_MS_ACCEL2,  KC_NO,   	 KC_MS_LEFT,    KC_MS_DOWN,   KC_MS_RIGHT,  KC_NO,    KC_NO,     KC_P4,    KC_P5,     KC_P6,   KC_PPLS,   KC_NO,    KC_NO,            _______,            _______,
@@ -80,77 +80,112 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 // Modded from the link below to match/use Matrix effects
 // From https://www.reddit.com/r/olkb/comments/e0hurb/comment/fawrcem/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
 
+// create constant placeholders for RGB light mode and HSV
+static uint8_t rgbModelast;
+static HSV rgbHSVlast;
+
+// initialization functions
 void eeconfig_init_user(void) {  // EEPROM is getting reset!
   // use the non noeeprom versions, to write these values to EEPROM too
   rgb_matrix_enable(); // Enable RGB by default
   rgb_matrix_sethsv(HSV_PURPLE);  // Set it to teal by default
   rgb_matrix_mode(RGB_MATRIX_SOLID_REACTIVE); // set to breathing by default
+  // update constant value
+  rgbModelast = rgb_matrix_get_mode();
+  rgbHSVlast = rgb_matrix_get_hsv();
 }
 
-static uint8_t rgbModelast;
-static HSV rgbHSVlast;
-   
+// function to hold color constants based on layer index
+uint8_t colorKeebH(uint8_t i){
+    uint8_t h=rgbHSVlast.h;
+    switch(i){
+      case 1:
+        h+=65;
+        break;
+      case 2:
+        h+=130;
+        break;
+      case 3:
+        h-=195;
+        break;
+      default:
+        h+=195;
+        break;
+    }
+    if(h>255){
+      h-=255;
+    }
+    if(h<0){
+      h+=255;
+    }
+    return h;
+}
+
+// function to update keeboard based on index input
+void updateKeeb(uint8_t i) {
+    uint8_t h=colorKeebH(i);
+    rgb_matrix_enable_noeeprom();
+    rgb_matrix_mode_noeeprom(rgbModelast);
+    rgb_matrix_sethsv_noeeprom(h,rgbHSVlast.s,rgbHSVlast.v);
+}
+
+// function to detect layer change and perform color change per layer
 layer_state_t layer_state_set_user(layer_state_t state) {
   //static effect_params_t* params;
   switch(biton32(state)) {
   case 1:
     // tealish
-    rgb_matrix_enable_noeeprom();
-    rgb_matrix_mode_noeeprom(rgbModelast);
-    rgb_matrix_sethsv_noeeprom(rgbHSVlast.h+56,rgbHSVlast.s,rgbHSVlast.v);
-    break;
+    updateKeeb(1);
   case 2:
     // greenish
-    rgb_matrix_enable_noeeprom();	
-    rgb_matrix_mode_noeeprom(rgbModelast);
-    rgb_matrix_sethsv_noeeprom(rgbHSVlast.h+112,rgbHSVlast.s,rgbHSVlast.v);
+    updateKeeb(2);
     break;
   case 3:
     // orangeish
-    rgb_matrix_enable_noeeprom();
-    rgb_matrix_mode_noeeprom(rgbModelast);
-    rgb_matrix_sethsv_noeeprom(rgbHSVlast.h-168,rgbHSVlast.s,rgbHSVlast.v);
-/*
-    RGB_MATRIX_USE_LIMITS(led_min, led_max);
-
-    HSV hsv  = rgb_matrix_config.hsv;
-    RGB rgb1 = hsv_to_rgb(hsv);
-    hsv.h += rgb_matrix_config.speed;
-    RGB rgb2 = hsv_to_rgb(hsv);
-
-    
-    //if (get_highest_layer(state) > 0) {
-        //uint8_t layer = get_highest_layer(state);
-
-        for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
-            for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
-                uint8_t index = g_led_config.matrix_co[row][col];
-
-                if (index >= led_min && index < led_max && index != NO_LED && HAS_FLAGS(g_led_config.flags[index], 0x04) &&
-                keymap_key_to_keycode(_NUM, (keypos_t){col,row}) > KC_TRNS) {
-                    rgb_matrix_set_color(index, rgb1.r, rgb1.g, rgb1.b);
-                }
-                if (!HAS_FLAGS(g_led_config.flags[index], 0x04)) {
-                    rgb_matrix_set_color(index, rgb2.r, rgb2.g, rgb2.b);
-                }
-            }
-        }
-        rgb_matrix_check_finished_leds(led_max);
-*/
-    //}
+    updateKeeb(3);
     break;
   default:
     // if not touched, purpleish
+    // update constant value if on _BASE
+    rgbModelast = rgb_matrix_get_mode();
+    rgbHSVlast = rgb_matrix_get_hsv();
     //If enabled, set white
     if (rgb_matrix_is_enabled()) {
-      rgbModelast = rgb_matrix_get_mode();
-      rgbHSVlast = rgb_matrix_get_hsv();
-      rgb_matrix_mode_noeeprom(rgbModelast);
-      rgb_matrix_sethsv_noeeprom(rgbHSVlast.h+168,rgbHSVlast.s,rgbHSVlast.v);
+      updateKeeb(0);
 	  } else { //Otherwise go back to disabled
 		  rgb_matrix_disable_noeeprom();
 	  }
     break;
   }
   return state;
+}
+
+// Custom light functions based on layers and indicator used
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    // This will turn off keys that are transparent or KC_NO
+    if (get_highest_layer(layer_state) > 0) {
+        uint8_t layer = get_highest_layer(layer_state); // get current layer
+
+        for (uint8_t row = 0; row < MATRIX_ROWS; ++row) { // for every matrix row
+            for (uint8_t col = 0; col < MATRIX_COLS; ++col) { // for every column
+                uint8_t index = g_led_config.matrix_co[row][col]; // get the index number
+
+                if (index >= led_min && index < led_max && index != NO_LED) { //if within led lims and not flagged as no led
+                    if(keymap_key_to_keycode(layer, (keypos_t){col,row}) == KC_TRNS ||
+                    keymap_key_to_keycode(layer, (keypos_t){col,row}) == KC_NO) { // if transparent or KC_NO, turn light off
+                        rgb_matrix_set_color(index, RGB_BLACK);
+                    }
+                }
+            }
+        }
+    }
+    // If we are on _BASE layer, and CAPS is on, then only highlight letters. 
+    if (host_keyboard_led_state().caps_lock && get_highest_layer(layer_state) == 0) {
+        for (uint8_t i = led_min; i < led_max; i++) {
+            if (g_led_config.flags[i] != LED_FLAG_KEYLIGHT) {
+                rgb_matrix_set_color(i, RGB_BLACK);
+            }
+        }
+    }
+    return false;
 }
