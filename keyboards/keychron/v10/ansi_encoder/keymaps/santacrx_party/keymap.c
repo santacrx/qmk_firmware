@@ -60,7 +60,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_NUM] = LAYOUT_ansi_89(
         KC_MS_BTN1,   RGB_TOG,  		RGB_HUD,  	   RGB_HUI,  	   RGB_SAD,    RGB_SAI,  RGB_VAD,   RGB_VAI,  RGB_RMOD,  RGB_MOD,   KC_NO,  	KC_NO,    KC_NO,   KC_NO,   _______,            _______,
-        KC_MS_ACCEL0,  KC_NO,        KC_NO,         KC_NO,        KC_NO,      KC_NO,    KC_NO,     KC_NO,   KC_PSLS,   KC_PAST,  KC_PMNS,   KC_NO,   _______, _______,  _______,            _______,
+        KC_MS_ACCEL0,  KC_NO, 	     KC_NO,         KC_NO,        KC_NO,      KC_NO,    KC_NO,     KC_NO,   KC_PSLS,   KC_PAST,  KC_PMNS,   KC_NO,   _______, _______,  _______,            _______,
         KC_MS_ACCEL1, _______,    	 KC_NO,        KC_MS_UP,  	  KC_NO,	    KC_NO,    KC_NO,     KC_P7,    KC_P8,     KC_P9,   KC_PPLS,   KC_NO,    KC_NO,    KC_NO,  _______,            _______,
         KC_MS_ACCEL2,  KC_NO,   	 KC_MS_LEFT,    KC_MS_DOWN,   KC_MS_RIGHT,  KC_NO,    KC_NO,     KC_P4,    KC_P5,     KC_P6,   KC_PPLS,   KC_NO,    KC_NO,            _______,            _______,
          KC_NO,   	  _______,            		      KC_NO,   	    KC_NO,      KC_NO,    KC_NO,     KC_NO,    KC_P0,     KC_P1,    KC_P2,    KC_P3,   KC_PENT,  KC_NO,    KC_NO,   _______,
@@ -78,7 +78,7 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 
 // PARTY_MODE LIGHTS
 // trying moving things here from rg_matrix_user.inc to see if it compiles
-
+/*
 static HSV party_math(HSV hsv, uint8_t i, uint8_t time) {
     hsv.h = g_led_config.point[i].x - time;
     return hsv;
@@ -113,46 +113,76 @@ bool party_effect_i(effect_params_t* params, HSV effect_func) {
 bool party_keylgihts(effect_params_t* params) {
     return party_effect_i(params, &party_math);
 }
+*/
 
 // LIGHTS PER LAYER
 // Modded from the link below to match/use Matrix effects
 // From https://www.reddit.com/r/olkb/comments/e0hurb/comment/fawrcem/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
 
+
+static uint8_t rgbModelast;
+static HSV rgbHSVlast;
+
 void eeconfig_init_user(void) {  // EEPROM is getting reset!
   // use the non noeeprom versions, to write these values to EEPROM too
   rgb_matrix_enable(); // Enable RGB by default
-  rgb_matrix_sethsv(HSV_PURPLE);  // Set it to teal by default
+  rgb_matrix_sethsv(HSV_TEAL);  // Set it to teal by default
   rgb_matrix_mode(RGB_MATRIX_SOLID_REACTIVE); // set to breathing by default
+  rgb_matrix_set
+  // update constant value
+  rgbModelast = rgb_matrix_get_mode();
+  rgbHSVlast = rgb_matrix_get_hsv();
+}
+
+void updateKeeb(uint8_t i) {
+    uint8_t h=rgbHSVlast.h;
+    switch(i){
+      case 1:
+        h+=65;
+        break;
+      case 2:
+        h+=130;
+        break;
+      case 3:
+        h-=195;
+        break;
+      default:
+        h+=168;
+        break;
+    }
+    if(h>255){
+      h-=255;
+    }
+    if(h<0){
+      h+=255;
+    }
+    rgb_matrix_enable_noeeprom();
+    rgb_matrix_mode_noeeprom(rgbModelast);
+    rgb_matrix_sethsv_noeeprom(h,rgbHSVlast.s,rgbHSVlast.v);
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-  uint8_t rgbModelast = rgb_matrix_get_mode();
-  HSV rgbHSVlast = rgb_matrix_get_hsv();
+  //static effect_params_t* params;
   switch(biton32(state)) {
   case 1:
     // tealish
-    rgb_matrix_enable_noeeprom();
-    rgb_matrix_mode_noeeprom(rgbModelast);
-    rgb_matrix_sethsv_noeeprom(rgbHSVlast.h+56,rgbHSVlast.s,rgbHSVlast.v);
-    break;
+    updateKeeb(1);
   case 2:
     // greenish
-    rgb_matrix_enable_noeeprom();	
-    rgb_matrix_mode_noeeprom(rgbModelast);
-    rgb_matrix_sethsv_noeeprom(rgbHSVlast.h+112,rgbHSVlast.s,rgbHSVlast.v);
+    updateKeeb(2);
     break;
   case 3:
     // orangeish
-    rgb_matrix_enable_noeeprom();
-    rgb_matrix_sethsv_noeeprom(rgbHSVlast.h,rgbHSVlast.s,rgbHSVlast.v);
-    //rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_party_keylights);
-    party_keylights(effect_params_t* params);
+    updateKeeb(3);
     break;
   default:
     // if not touched, purpleish
+    // update constant value
+    rgbModelast = rgb_matrix_get_mode();
+    rgbHSVlast = rgb_matrix_get_hsv();
     //If enabled, set white
     if (rgb_matrix_is_enabled()) {
-      rgb_matrix_sethsv_noeeprom(rgbHSVlast.h+168,rgbHSVlast.s,rgbHSVlast.v);
+      updateKeeb(0);
 	  } else { //Otherwise go back to disabled
 		  rgb_matrix_disable_noeeprom();
 	  }

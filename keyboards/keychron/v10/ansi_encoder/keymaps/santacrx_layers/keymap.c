@@ -67,6 +67,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_NUM,   	  _______,  		_______,       		     	     _______,    _______,  _______,                         KC_P0,             KC_PDOT,                     _______,  _______,  _______),
 };
 
+// map what the rotary encoder for the knob does
 #if defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [_BASE] = { ENCODER_CCW_CW(KC_MS_WH_LEFT, KC_MS_WH_RIGHT) },
@@ -83,35 +84,38 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 // create constant placeholders for RGB light mode and HSV
 static uint8_t rgbModelast;
 static HSV rgbHSVlast;
+static int8_t prevLayerInt; 
 
 // initialization functions
 void eeconfig_init_user(void) {  // EEPROM is getting reset!
   // use the non noeeprom versions, to write these values to EEPROM too
   rgb_matrix_enable(); // Enable RGB by default
-  rgb_matrix_sethsv(HSV_PURPLE);  // Set it to teal by default
-  rgb_matrix_mode(RGB_MATRIX_SOLID_REACTIVE); // set to breathing by default
+  rgb_matrix_sethsv(HSV_TEAL);  // Set it to teal by default
+  rgb_matrix_mode(RGB_MATRIX_GRADIENT_UP_DOWN); // set the default
   // update constant value
   rgbModelast = rgb_matrix_get_mode();
   rgbHSVlast = rgb_matrix_get_hsv();
+  prevLayerInt = 0;
 }
 
 // function to hold color constants based on layer index
-uint8_t colorKeebH(uint8_t i){
-    uint8_t h=rgbHSVlast.h;
-    switch(i){
+uint8_t colorKeebH(int8_t i){
+    // get the delta of the default vs the last h value.
+    uint8_t h=128-rgbHSVlast.h; // teal H value is 128
+    switch(abs(i)){
       case 1:
-        h+=65;
-        break;
       case 2:
-        h+=130;
-        break;
-      case 3:
-        h-=195;
+        // _BASE -> _FN1 or _FN2
+        h+=60*i; // +/-60
         break;
       default:
-        h+=195;
+        // _BASE and _NUM: don't change HUE VALUE
         break;
     }
+    // rebase HUE with original default
+    h+=128; // teal H value is 128
+
+    // if  out of 8bit range, adjust/bound to limit
     if(h>255){
       h-=255;
     }
@@ -122,7 +126,7 @@ uint8_t colorKeebH(uint8_t i){
 }
 
 // function to update keeboard based on index input
-void updateKeeb(uint8_t i) {
+void updateKeeb(int8_t i) {
     uint8_t h=colorKeebH(i);
     rgb_matrix_enable_noeeprom();
     rgb_matrix_mode_noeeprom(rgbModelast);
@@ -131,36 +135,36 @@ void updateKeeb(uint8_t i) {
 
 // function to detect layer change and perform color change per layer
 layer_state_t layer_state_set_user(layer_state_t state) {
+  // determine layer jump and direction
+  int8_t d = biton32(state) - prevLayerInt;
+  
   //static effect_params_t* params;
   switch(biton32(state)) {
-  case 1:
-    // tealish
-    updateKeeb(1);
-  case 2:
-    // greenish
-    updateKeeb(2);
-    break;
   case 3:
-    // orangeish
-    updateKeeb(3);
+    // _NUM
+    rgbModelast = rgb_matrix_get_mode();
+    rgb_matrix_mode(RGB_MATRIX_CYCLE_LEFT_RIGHT); // on NumPad, change it to rainbow
     break;
   default:
-    // if not touched, purpleish
-    // update constant value if on _BASE
-    rgbModelast = rgb_matrix_get_mode();
-    rgbHSVlast = rgb_matrix_get_hsv();
+    // _BASE
+    // update constant value if on _BASE and there was a change coming in from _NUM
+    if (rgb_matrix_get_mode() != RGB_MATRIX_CYCLE_LEFT_RIGHT) {
+      rgbModelast = rgb_matrix_get_mode();
+      rgbHSVlast = rgb_matrix_get_hsv();
+    }
     //If enabled, set white
     if (rgb_matrix_is_enabled()) {
-      updateKeeb(0);
+      updateKeeb(d);
 	  } else { //Otherwise go back to disabled
 		  rgb_matrix_disable_noeeprom();
 	  }
     break;
   }
+  prevLayerInt = biton32(state);
   return state;
 }
 
-// Custom light functions based on layers and indicator used
+// Custom light functions based on layers and indicator used to only show active keys
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     // This will turn off keys that are transparent or KC_NO
     if (get_highest_layer(layer_state) > 0) {
