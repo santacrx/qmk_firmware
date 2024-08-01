@@ -110,10 +110,11 @@ When returning from 0, the respective overlay will be activated.
   * `_FN` has diagonal to LH-HI corner (mimicking pointing to knob)
 
 ## Worflow / Desired Features / Bugs
-- [ ] Port over with desired layer change, test nothing broke in that port.
-  - [ ] Enable Console, test output
-  - [ ] Disable lighting ported from `_layer`
-- [ ] Create layer change function:
+- [x] Port over with desired layer change, test nothing broke in that port. (20240801)
+  - [x] Enable Console, test output
+  - [x] Disable lighting ported from `_layer`
+- [ ] Layer change function:
+  - [x] Create supporting functions and constants (20240801)
   - [ ] Test output to console, not yet perform change
   - [ ] Perform layer change
 - [ ] Adapt lights to current layer setup

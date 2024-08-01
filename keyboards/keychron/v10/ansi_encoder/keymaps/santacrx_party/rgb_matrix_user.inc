@@ -3,11 +3,33 @@
 // Step 1.
 // Declare custom effects using the RGB_MATRIX_EFFECT macro
 // (note the lack of semicolon after the macro!)
-RGB_MATRIX_EFFECT(party_keylights)
+RGB_MATRIX_EFFECT(PARTY_KEYS)
+RGB_MATRIX_EFFECT(LAYER_MOD)
 
 // Step 2.
 // Define effects inside the `RGB_MATRIX_CUSTOM_EFFECT_IMPLS` ifdef block
 #ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
+
+// LAYER MOD
+
+static bool LAYER_MOD(effect_params_t* params) {
+    LED_MATRIX_USE_LIMITS(led_min, led_max);
+
+    uint8_t val1 = led_matrix_eeconfig.val;
+    uint8_t val2 = val1 + led_matrix_eeconfig.speed;
+
+    for (uint8_t i = led_min; i < led_max; i++) {
+        LED_MATRIX_TEST_LED_FLAGS();
+        if (HAS_FLAGS(g_led_config.flags[i], 0x04)) {
+            rgb_matrix_set_value(i, val1);
+        } else {
+            led_matrix_set_value(i, val1);
+        }
+    }
+    return led_matrix_check_finished_leds(led_max);
+}
+
+// PARTY_KEYS
 
 static HSV party_math(HSV hsv, uint8_t i, uint8_t time) {
     hsv.h = g_led_config.point[i].x - time;
@@ -16,7 +38,7 @@ static HSV party_math(HSV hsv, uint8_t i, uint8_t time) {
 
 static uint8_t current_layer = get_highest_layer(layer_state);
 
-static bool party_keylights(effect_params_t* params, current_layer) {
+static bool PARTY_KEYS(effect_params_t* params, current_layer) {
     uint8_t time = scale16by8(g_rgb_timer, qadd8(rgb_matrix_config.speed / 4, 1));
     uint8_t layer = current_layer;
 

@@ -59,12 +59,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   _______,                       KC_SPC,             _______,                      KC_LEFT,  KC_DOWN,  KC_RGHT),
 
     [_NUM] = LAYOUT_ansi_89(
-        KC_MS_BTN1,   RGB_TOG,  		RGB_HUD,  	   RGB_HUI,  	   RGB_SAD,    RGB_SAI,  RGB_VAD,   RGB_VAI,  RGB_RMOD,  RGB_MOD,  RGB_SPD,  RGB_SPI,    KC_NO,   KC_NO,   _______,            _______,
+        KC_MS_BTN2,   RGB_TOG,  		RGB_HUD,  	   RGB_HUI,  	   RGB_SAD,    RGB_SAI,  RGB_VAD,   RGB_VAI,  RGB_RMOD,  RGB_MOD,  RGB_SPD,  RGB_SPI,    KC_NO,   KC_NO,   _______,            _______,
         KC_MS_ACCEL0,  KC_NO, 	     KC_NO,         KC_NO,        KC_NO,      KC_NO,    KC_NO,     KC_NO,   KC_PSLS,   KC_PAST,  KC_PMNS,   KC_NO,   _______, _______,  _______,            _______,
         KC_MS_ACCEL1, _______,    	 KC_NO,        KC_MS_UP,  	  KC_NO,	    KC_NO,    KC_NO,     KC_P7,    KC_P8,     KC_P9,   KC_PPLS,   KC_NO,    KC_NO,    KC_NO,  _______,            _______,
         KC_MS_ACCEL2,  KC_NO,   	 KC_MS_LEFT,    KC_MS_DOWN,   KC_MS_RIGHT,  KC_NO,    KC_NO,     KC_P4,    KC_P5,     KC_P6,   KC_PPLS,   KC_NO,    KC_NO,            _______,            _______,
          KC_NO,   	  _______,            		      KC_NO,   	    KC_NO,      KC_NO,    KC_NO,     KC_NO,    KC_P0,     KC_P1,    KC_P2,    KC_P3,   KC_PENT,  KC_NO,    KC_NO,   _______,
-        KC_NUM,   	  _______,  		_______,       		     	     _______,    _______,  _______,                         KC_P0,             KC_PDOT,                     _______,  _______,  _______),
+        KC_NUM,   	  _______,  		_______,       		     	     _______,    KC_MS_BTN1,  _______,                         KC_P0,             KC_PDOT,                     _______,  _______,  _______),
 };
 
 // map what the rotary encoder for the knob does
@@ -101,19 +101,19 @@ void eeconfig_init_user(void) {  // EEPROM is getting reset!
 // function to hold color constants based on layer index
 uint8_t colorKeebH(int8_t i){
     // get the delta of the default vs the last h value.
-    uint8_t h=128-rgbHSVlast.h; // teal H value is 128
+    uint8_t h=rgbHSVlast.h; // teal H value is 128
     switch(abs(i)){
       case 1:
       case 2:
         // _BASE -> _FN1 or _FN2
-        h+=60*i; // +/-60
+        h+=60*i; // +/-60 for _FN1, 120 _FN2
         break;
       default:
         // _BASE and _NUM: don't change HUE VALUE
         break;
     }
     // rebase HUE with original default
-    h+=128; // teal H value is 128
+    //h+=128; // teal H value is 128
 
     // if  out of 8bit range, adjust/bound to limit
     if(h>255){
@@ -166,10 +166,11 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 // Custom light functions based on layers and indicator used to only show active keys
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-    // This will turn off keys that are transparent or KC_NO
-    if (get_highest_layer(layer_state) > 0) {
-        uint8_t layer = get_highest_layer(layer_state); // get current layer
+    uint8_t layer = get_highest_layer(layer_state); // get current layer
 
+    // This will turn off keys that are transparent or KC_NO for any layer above 0
+    if (layer > 0) {
+       
         for (uint8_t row = 0; row < MATRIX_ROWS; ++row) { // for every matrix row
             for (uint8_t col = 0; col < MATRIX_COLS; ++col) { // for every column
                 uint8_t index = g_led_config.matrix_co[row][col]; // get the index number
@@ -183,8 +184,8 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             }
         }
     }
-    // If we are on _BASE layer, and CAPS is on, then only highlight letters. 
-    if (host_keyboard_led_state().caps_lock && get_highest_layer(layer_state) == 0) {
+    // If we are on _BASE layer and CAPS is on, OR on _NUM layer, then only highlight letters. 
+    if ((host_keyboard_led_state().caps_lock && layer == 0) ||  layer == 3) {
         for (uint8_t i = led_min; i < led_max; i++) {
             if (g_led_config.flags[i] != LED_FLAG_KEYLIGHT) {
                 rgb_matrix_set_color(i, RGB_BLACK);

@@ -1,4 +1,4 @@
-/* Copyright 2023 @ santacrx
+/* Copyright 2024 @ santacrx
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,56 +25,104 @@
 // clang-format off
 
 enum layers{
+    _FN,
     _BASE,
-    _FN1,
-    _FN2,
+    _LV,
+    _VS,
+    _MAT,
+    _CAD,
+    _NA,
     _NUM
 };
 
+// adding custom keycodes for layer cycling using the knob
+enum custom_keycodes{
+  LAYERUP = SAFE_RANGE,
+  LAYERDN,
+};
+
+#define LAYER_CYCLE_START 1 // 1st layer on the cycle
+#define LAYER_CYCLE_END   6 // Last layer on the cycle
 #define KC_TASK LGUI(KC_TAB)
 #define KC_FLXP LGUI(KC_E)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    [_BASE] = LAYOUT_ansi_89(
-        _______,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   TG(_NUM),           KC_PSCR,
-        _______,  KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,      KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,            KC_DEL,
-        _______,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,            KC_HOME,
-        _______,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),           KC_END,
-        _______,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RCTL(KC_APP),  KC_UP,
-        _______,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   MO(_FN1),                      KC_SPC,             MO(_FN2),                     KC_LEFT,  KC_DOWN,  KC_RGHT),
-
-    [_FN1] = LAYOUT_ansi_89(
-        KC_MUTE,  KC_CALC,  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FLXP,  RGB_VAD,   RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  _______,            _______,
+    [_FN] = LAYOUT_ansi_89(
+        _______,  KC_CALC,  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FLXP,  RGB_VAD,   RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  _______,            _______,
         _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
         _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            KC_PGUP,
         _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            KC_PGDN,
         _______,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  NK_TOGG,  _______,  _______,  _______,  _______,  _______,  _______,
         _______,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
 
-    [_FN2] = LAYOUT_ansi_89(
-        KC_MPLY,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   _______,            _______,
-        _______,  KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,      KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,            _______,
-        _______,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,            _______,
-        _______,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            KC_ENT,             _______,
-        _______,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_RSFT,  KC_UP,
-        _______,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   _______,                       KC_SPC,             _______,                      KC_LEFT,  KC_DOWN,  KC_RGHT),
+    [_BASE] = LAYOUT_ansi_89(
+        _______,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   TG(_NUM),           KC_PSCR,
+        _______,  KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,      KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,            KC_DEL,
+        _______,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,            KC_HOME,
+        _______,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),           KC_END,
+        _______,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RCTL(KC_APP),  KC_UP,
+        _______,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   TG(_FN),                      KC_SPC,              _______,                      KC_LEFT,  KC_DOWN,  KC_RGHT),
+
+    [_LV] = LAYOUT_ansi_89(
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
+        _______,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        _______,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
+
+    [_VS] = LAYOUT_ansi_89(
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
+        _______,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        _______,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
+
+    [_MAT] = LAYOUT_ansi_89(
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
+        _______,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        _______,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
+
+    [_CAD] = LAYOUT_ansi_89(
+        KC_MUTE,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
+        _______,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        _______,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
+
+    [_NA] = LAYOUT_ansi_89(
+        KC_MPLY,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
+        _______,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        _______,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
 
     [_NUM] = LAYOUT_ansi_89(
-        KC_MS_BTN2,   RGB_TOG,  		RGB_HUD,  	   RGB_HUI,  	   RGB_SAD,    RGB_SAI,  RGB_VAD,   RGB_VAI,  RGB_RMOD,  RGB_MOD,  RGB_SPD,  RGB_SPI,    KC_NO,   KC_NO,   _______,            _______,
-        KC_MS_ACCEL0,  KC_NO, 	     KC_NO,         KC_NO,        KC_NO,      KC_NO,    KC_NO,     KC_NO,   KC_PSLS,   KC_PAST,  KC_PMNS,   KC_NO,   _______, _______,  _______,            _______,
-        KC_MS_ACCEL1, _______,    	 KC_NO,        KC_MS_UP,  	  KC_NO,	    KC_NO,    KC_NO,     KC_P7,    KC_P8,     KC_P9,   KC_PPLS,   KC_NO,    KC_NO,    KC_NO,  _______,            _______,
-        KC_MS_ACCEL2,  KC_NO,   	 KC_MS_LEFT,    KC_MS_DOWN,   KC_MS_RIGHT,  KC_NO,    KC_NO,     KC_P4,    KC_P5,     KC_P6,   KC_PPLS,   KC_NO,    KC_NO,            _______,            _______,
-         KC_NO,   	  _______,            		      KC_NO,   	    KC_NO,      KC_NO,    KC_NO,     KC_NO,    KC_P0,     KC_P1,    KC_P2,    KC_P3,   KC_PENT,  KC_NO,    KC_NO,   _______,
-        KC_NUM,   	  _______,  		_______,       		     	     _______,    KC_MS_BTN1,  _______,                         KC_P0,             KC_PDOT,                     _______,  _______,  _______),
+        KC_MS_BTN2,   RGB_TOG,  RGB_HUD,  	RGB_HUI,  	RGB_SAD,      RGB_SAI,    RGB_VAD,   RGB_VAI, RGB_RMOD,  RGB_MOD, RGB_SPD,  RGB_SPI,  KC_NO,    KC_NO,    _______,            _______,
+        KC_MS_ACCEL0, KC_NO, 	  KC_NO,      KC_NO,      KC_NO,        KC_NO,      KC_NO,     KC_NO,   KC_PSLS,   KC_PAST, KC_PMNS,  KC_NO,    _______,  _______,  _______,            _______,
+        KC_MS_ACCEL1, _______,  KC_NO,      KC_MS_UP,  	KC_NO,	      KC_NO,      KC_NO,     KC_P7,   KC_P8,     KC_P9,   KC_PPLS,  KC_NO,    KC_NO,    KC_NO,    _______,            KC_PGUP,
+        KC_MS_ACCEL2, KC_NO,   	KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT,  KC_NO,      KC_NO,     KC_P4,   KC_P5,     KC_P6,   KC_PPLS,  KC_NO,    KC_NO,              _______,            KC_PGDN,
+        KC_NO,   	    _______,       		    KC_NO,   	  KC_NO,        KC_NO,      KC_NO,     KC_NO,   KC_P0,     KC_P1,   KC_P2,    KC_P3,    KC_PENT,  KC_NO,    KC_NO,    _______,
+        KC_NUM,   	  _______,  _______,       		     	_______,      KC_MS_BTN1, _______,                       KC_P0,             KC_PDOT,                      _______,  _______,  _______),
 };
 
 // map what the rotary encoder for the knob does
 #if defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
+    [_FN] = { ENCODER_CCW_CW(LAYERDN, LAYERUP) },
     [_BASE] = { ENCODER_CCW_CW(KC_MS_WH_LEFT, KC_MS_WH_RIGHT) },
-    [_FN1]   = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
-    [_FN2] = { ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
-    [_NUM]   = { ENCODER_CCW_CW(KC_MS_WH_DOWN, KC_MS_WH_UP) }
+    [_LV] = { ENCODER_CCW_CW(KC_MS_WH_LEFT, KC_MS_WH_RIGHT) },
+    [_VS] = { ENCODER_CCW_CW(KC_LEFT, KC_RGHT) },
+    [_MAT] = { ENCODER_CCW_CW(KC_LEFT, KC_RGHT) },
+    [_CAD] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
+    [_NA] = { ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
+    [_NUM] = { ENCODER_CCW_CW(KC_MS_WH_DOWN, KC_MS_WH_UP) }
 };
 #endif // ENCODER_MAP_ENABLE
 
@@ -85,10 +133,15 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 // create constant placeholders for RGB light mode and HSV
 static uint8_t rgbModelast;
 static HSV rgbHSVlast;
-static int8_t prevLayerInt; 
+static int8_t prevLayerInt;
+// global constants  for the layer change gig
+static uint8_t currLayerID;
+static uint8_t currLayerMask;  // mask is ID  ORed with b0010
 
 // initialization functions
 void eeconfig_init_user(void) {  // EEPROM is getting reset!
+  // set default layer to _BASE
+
   // use the non noeeprom versions, to write these values to EEPROM too
   rgb_matrix_enable(); // Enable RGB by default
   rgb_matrix_sethsv(HSV_TEAL);  // Set it to teal by default
@@ -97,8 +150,62 @@ void eeconfig_init_user(void) {  // EEPROM is getting reset!
   rgbModelast = rgb_matrix_get_mode();
   rgbHSVlast = rgb_matrix_get_hsv();
   prevLayerInt = 0;
+  currLayerID = 1;
 }
 
+// Add the behaviour for custom keycodes
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case LAYERUP:
+      // Our logic will happen on presses, nothing is done on releases
+      if (!record->event.pressed) { 
+        // We've already handled the keycode (doing nothing), let QMK know so no further code is run unnecessarily
+        return false;
+      }
+
+      // Check if we are within the range, if not quit
+      if (currLayerID > LAYER_CYCLE_END || currLayerID < LAYER_CYCLE_START) {
+        return false;
+      }
+
+      currLayerID=+1;
+      if (currLayerID > LAYER_CYCLE_END) {
+          currLayerID = LAYER_CYCLE_START;
+      }
+      uprintf("LAYERUP! New Setting:%2u\n",currLayerID);
+      return false;
+    case LAYERDN:
+      // Our logic will happen on presses, nothing is done on releases
+      if (!record->event.pressed) { 
+        // We've already handled the keycode (doing nothing), let QMK know so no further code is run unnecessarily
+        return false;
+      }
+
+      // Check if we are within the range, if not quit
+      if (currLayerID > LAYER_CYCLE_END || currLayerID < LAYER_CYCLE_START) {
+        return false;
+      }
+
+      currLayerID=-1;
+      if (currLayerID < LAYER_CYCLE_START) {
+          currLayerID = LAYER_CYCLE_END;
+      }
+      uprintf("LAYERUP! New Setting:%2u\n",currLayerID);
+      return false;
+    // Process other keycodes normally
+    default:
+      return true;
+  }
+}
+
+void updateKnobLayer(void){
+  currLayerMask = currLayerID | 2; // current layer | 2 = 0000 0010
+  uprintf("ID:%2u, Mask:%2u\n",currLayerID, currLayerMask);
+  //layer_clear();
+  //layer_state_set(currLayerMask);
+}
+
+/*
 // function to hold color constants based on layer index
 uint8_t colorKeebH(int8_t i){
     // get the delta of the default vs the last h value.
@@ -123,13 +230,14 @@ uint8_t colorKeebH(int8_t i){
     if(h<0){
       h+=255;
     }
-    print("h=%3u\n",h);
+    uprintf("h=%3u\n",h);
     return h;
 }
+*/
 
 // function to update keeboard based on index input
 void updateKeeb(int8_t i) {
-    uint8_t h=colorKeebH(i);
+    uint8_t h=128;//colorKeebH(i);
     rgb_matrix_enable_noeeprom();
     rgb_matrix_mode_noeeprom(rgbModelast);
     rgb_matrix_sethsv_noeeprom(h,rgbHSVlast.s,rgbHSVlast.v);
@@ -138,25 +246,35 @@ void updateKeeb(int8_t i) {
 // function to detect layer change and perform color change per layer
 layer_state_t layer_state_set_user(layer_state_t state) {
   // determine layer jump and direction
-  int8_t d = biton32(state) - prevLayerInt;
-  
+  //int8_t d = biton32(state) - prevLayerInt;
+  uint8_t current_layer = get_highest_layer(state);
+  uprintf("state: %2u; biton32(state): %2u; highest layer: %2u\n",state,biton32(state),current_layer);
   //static effect_params_t* params;
-  switch(biton32(state)) {
-  case 3:
+  //switch(biton32(state)) {
+  switch(current_layer){
+  case 0:
+    // _FN
+    rgbModelast = rgb_matrix_get_mode();
+    rgb_matrix_mode(RGB_MATRIX_BAND_SPIRAL_VAL); // on NumPad, change it to rainbow
+    break;
+  case 7:
     // _NUM
     rgbModelast = rgb_matrix_get_mode();
     rgb_matrix_mode(RGB_MATRIX_CYCLE_LEFT_RIGHT); // on NumPad, change it to rainbow
     break;
   default:
-    // _BASE
+    // _BASE and the macro layers
+    // perform  layer masking update/activation
+    //updateKnobLayer();
     // update constant value if on _BASE and there was a change coming in from _NUM
     if (rgb_matrix_get_mode() != RGB_MATRIX_CYCLE_LEFT_RIGHT) {
       rgbModelast = rgb_matrix_get_mode();
       rgbHSVlast = rgb_matrix_get_hsv();
     }
-    //If enabled, set white
+
+    //If enabled, update color
     if (rgb_matrix_is_enabled()) {
-      updateKeeb(d);
+      //updateKeeb(d);
 	  } else { //Otherwise go back to disabled
 		  //rgb_matrix_disable_noeeprom();
 	  }
