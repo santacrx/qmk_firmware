@@ -20,6 +20,7 @@
 
 #include QMK_KEYBOARD_H
 #include "print.h"
+#include "math.h"
 //#include "keychron_common.h"
 
 // clang-format off
@@ -53,7 +54,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            KC_PGUP,
         _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            KC_PGDN,
         _______,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  NK_TOGG,  _______,  _______,  _______,  _______,  _______,  _______,
-        _______,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
+        _______,  _______,  _______,            _______,  _______,  TG(_BASE),                       _______,            _______,                      _______,  _______,  _______),
 
     [_BASE] = LAYOUT_ansi_89(
         _______,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   TG(_NUM),           KC_PSCR,
@@ -61,7 +62,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,            KC_HOME,
         _______,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),           KC_END,
         _______,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RCTL(KC_APP),  KC_UP,
-        _______,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   TG(_FN),                      KC_SPC,              _______,                      KC_LEFT,  KC_DOWN,  KC_RGHT),
+        _______,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   _______,                      KC_SPC,              TG(_CAD),                      KC_LEFT,  KC_DOWN,  KC_RGHT),
 
     [_LV] = LAYOUT_ansi_89(
         _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
@@ -69,7 +70,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
         _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
         _______,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
-        _______,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
+        _______,  _______,  _______,            _______,  _______,  KC_NO,                         _______,            _______,                      _______,  _______,  _______),
 
     [_VS] = LAYOUT_ansi_89(
         _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
@@ -126,8 +127,23 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 };
 #endif // ENCODER_MAP_ENABLE
 
+// map waht the dipswitch does: turn lights on or off (LH=ON, RH=OFF)
+#ifdef DIP_SWITCH_ENABLE
+bool dip_switch_update_user(uint8_t index, bool active) {
+    if (index == 0) {
+        if (active){
+          rgb_matrix_disable_noeeprom();
+        } else {
+          rgb_matrix_enable_noeeprom();
+        }
+        //default_layer_set(1UL << (active ? 2 : 0));
+    }
+    return true;
+}
+#endif
+
 // LIGHTS PER LAYER
-// Modded from the link below to match/use Matrix effects
+// Modded from the link below to match/use Matrix effects [2.1]
 // From https://www.reddit.com/r/olkb/comments/e0hurb/comment/fawrcem/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
 
 // create constant placeholders for RGB light mode and HSV
@@ -140,8 +156,10 @@ static uint8_t currLayerMask;  // mask is ID  ORed with b0010
 
 // initialization functions
 void eeconfig_init_user(void) {  // EEPROM is getting reset!
+  uprintf("eeconfig init ran\n");
   // set default layer to _BASE
-
+  default_layer_set(2); // 2 = b0010
+  layer_state_set(2);
   // use the non noeeprom versions, to write these values to EEPROM too
   rgb_matrix_enable(); // Enable RGB by default
   rgb_matrix_sethsv(HSV_TEAL);  // Set it to teal by default
@@ -151,6 +169,18 @@ void eeconfig_init_user(void) {  // EEPROM is getting reset!
   rgbHSVlast = rgb_matrix_get_hsv();
   prevLayerInt = 0;
   currLayerID = 1;
+}
+
+void keyboard_post_init_user(void) {
+  print("keyboard post init ran\n");
+  // Customise these values to desired behaviour
+  //debug_enable=true;
+  //debug_matrix=true;
+  //debug_keyboard=true;
+  //debug_mouse=true;
+  layer_state_set(2);
+  rgb_matrix_sethsv(HSV_TEAL);  // Set it to teal by default
+  rgb_matrix_mode(RGB_MATRIX_GRADIENT_UP_DOWN); // set the default
 }
 
 // Add the behaviour for custom keycodes
@@ -164,15 +194,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
 
       // Check if we are within the range, if not quit
-      if (currLayerID > LAYER_CYCLE_END || currLayerID < LAYER_CYCLE_START) {
+      if (currLayerID > 6 || currLayerID < 1) {
+        currLayerID=1;
         return false;
       }
 
-      currLayerID=+1;
-      if (currLayerID > LAYER_CYCLE_END) {
-          currLayerID = LAYER_CYCLE_START;
+      currLayerID+=1;
+      uprintf("LAYERUP! action: %2u\n",currLayerID);
+      if (currLayerID > 6) {
+          currLayerID = 1;
       }
-      uprintf("LAYERUP! New Setting:%2u\n",currLayerID);
+      uprintf("LAYERUP! New Setting: %2u\n",currLayerID);
       return false;
     case LAYERDN:
       // Our logic will happen on presses, nothing is done on releases
@@ -183,14 +215,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
       // Check if we are within the range, if not quit
       if (currLayerID > LAYER_CYCLE_END || currLayerID < LAYER_CYCLE_START) {
+        currLayerID=LAYER_CYCLE_END;
         return false;
       }
 
-      currLayerID=-1;
+      currLayerID-=1;
+      uprintf("LAYERUP! action: %2u\n",currLayerID);
       if (currLayerID < LAYER_CYCLE_START) {
-          currLayerID = LAYER_CYCLE_END;
+          currLayerID = 6;
       }
-      uprintf("LAYERUP! New Setting:%2u\n",currLayerID);
+      uprintf("LAYERDN! New Setting:%2u\n",currLayerID);
       return false;
     // Process other keycodes normally
     default:
@@ -199,10 +233,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 void updateKnobLayer(void){
-  currLayerMask = currLayerID | 2; // current layer | 2 = 0000 0010
+  currLayerMask = (int) pow(2,currLayerID) | 2; // 2^current layer, then or'd to 2 = 0000 0010
   uprintf("ID:%2u, Mask:%2u\n",currLayerID, currLayerMask);
   //layer_clear();
   //layer_state_set(currLayerMask);
+
+  // might not need to clear layer, as we always return to base. might need to OR it to the existing come back. if so, need to clear mask when returning from 0? investigate
 }
 
 /*
@@ -234,6 +270,32 @@ uint8_t colorKeebH(int8_t i){
     return h;
 }
 */
+/*
+HSV updateMkeysColor(uint8_t layerID){
+  HSV h={HSV_TEAL};
+  switch(layerID){
+    case 2:
+      h=HSV_ORANGE;
+      break;
+    case 3:
+      h=HSV_PURPLE;
+      break;
+    case 4:
+      h=HSV_RED;
+      break;
+    case 5:
+      h=HSV_GREEN;
+      break;
+    case 6:
+      h=HSV_CORAL;
+      break;
+    default:
+      break;
+  }
+  uprintf("updateMkeys called. hue returned: %3u\n",h.h);
+  return h;
+}
+*/
 
 // function to update keeboard based on index input
 void updateKeeb(int8_t i) {
@@ -246,7 +308,7 @@ void updateKeeb(int8_t i) {
 // function to detect layer change and perform color change per layer
 layer_state_t layer_state_set_user(layer_state_t state) {
   // determine layer jump and direction
-  //int8_t d = biton32(state) - prevLayerInt;
+  int8_t d = biton32(state) - prevLayerInt;
   uint8_t current_layer = get_highest_layer(state);
   uprintf("state: %2u; biton32(state): %2u; highest layer: %2u\n",state,biton32(state),current_layer);
   //static effect_params_t* params;
@@ -254,29 +316,30 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   switch(current_layer){
   case 0:
     // _FN
-    rgbModelast = rgb_matrix_get_mode();
-    rgb_matrix_mode(RGB_MATRIX_BAND_SPIRAL_VAL); // on NumPad, change it to rainbow
+    //rgbModelast = rgb_matrix_get_mode();
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_BAND_SPIRAL_VAL); // on NumPad, change it to rainbow
     break;
   case 7:
     // _NUM
-    rgbModelast = rgb_matrix_get_mode();
-    rgb_matrix_mode(RGB_MATRIX_CYCLE_LEFT_RIGHT); // on NumPad, change it to rainbow
+    //rgbModelast = rgb_matrix_get_mode();
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_CYCLE_LEFT_RIGHT); // on NumPad, change it to rainbow
     break;
   default:
     // _BASE and the macro layers
     // perform  layer masking update/activation
-    //updateKnobLayer();
-    // update constant value if on _BASE and there was a change coming in from _NUM
-    if (rgb_matrix_get_mode() != RGB_MATRIX_CYCLE_LEFT_RIGHT) {
+    updateKnobLayer();
+    
+    // update constant value if on _BASE or above and there was a change coming in from _NUM
+    if ((rgb_matrix_get_mode() != RGB_MATRIX_CYCLE_LEFT_RIGHT) && (prevLayerInt == 7)) {
       rgbModelast = rgb_matrix_get_mode();
       rgbHSVlast = rgb_matrix_get_hsv();
     }
 
     //If enabled, update color
     if (rgb_matrix_is_enabled()) {
-      //updateKeeb(d);
+      updateKeeb(d);
 	  } else { //Otherwise go back to disabled
-		  //rgb_matrix_disable_noeeprom();
+		  rgb_matrix_disable_noeeprom();
 	  }
     break;
   }
@@ -284,12 +347,15 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return state;
 }
 
+//Define M column indexes for color changes
+static uint8_t M_leds_idx[] = {15,31,47,62,77};
+
 // Custom light functions based on layers and indicator used to only show active keys
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     uint8_t layer = get_highest_layer(layer_state); // get current layer
 
-    // This will turn off keys that are transparent or KC_NO for any layer above 0
-    if (layer > 0) {
+    // This will turn off keys that are transparent or KC_NO for _FN and _NUM
+    if ((layer  == 7)) {
        
         for (uint8_t row = 0; row < MATRIX_ROWS; ++row) { // for every matrix row
             for (uint8_t col = 0; col < MATRIX_COLS; ++col) { // for every column
@@ -304,13 +370,24 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             }
         }
     }
+    
+    
     // If we are on _BASE layer and CAPS is on, OR on _NUM layer, then only highlight letters. 
-    if ((host_keyboard_led_state().caps_lock && layer == 0) ||  layer == 3) {
+    if ((host_keyboard_led_state().caps_lock && layer > 0) ||  layer == 7) {
         for (uint8_t i = led_min; i < led_max; i++) {
             if (g_led_config.flags[i] != LED_FLAG_KEYLIGHT) {
                 rgb_matrix_set_color(i, RGB_BLACK);
             }
         }
+    // else, we can color M column if within the layer range
+    } else if(layer > 1 && layer < 7){
+      print("M column color being called\n");
+      for(uint8_t col = 0; col < 5; ++col){
+        uprintf("M_led_idx[%1u]=%2u\n",col,M_leds_idx[col]);
+        //rgb_matrix_set_color(M_leds_idx[col],updateMkeysColor(layer));
+      }
     }
+    
+
     return false;
 }

@@ -115,11 +115,11 @@ When returning from 0, the respective overlay will be activated.
   - [x] Disable lighting ported from `_layer`
 - [ ] Layer change function:
   - [x] Create supporting functions and constants (20240801)
-  - [ ] Test output to console, not yet perform change
+  - [x] Test output to console, not yet perform change (20240805)
   - [ ] Perform layer change
 - [ ] Adapt lights to current layer setup
-  - [ ] Create debugging witnesses, test
+  - [x] Create debugging witnesses, test (20240802)
   - [ ] Enable functionality
-  - [ ] Make a Macro index group
-  - [ ] Make Macro light function
+  - [x] Make a Macro index group (20240805)
+  - [x] Make Macro light function (20240805)
   - [ ] Test macro light
