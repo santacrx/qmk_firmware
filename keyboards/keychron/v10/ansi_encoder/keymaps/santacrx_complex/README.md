@@ -123,3 +123,14 @@ When returning from 0, the respective overlay will be activated.
   - [x] Make a Macro index group (20240805)
   - [x] Make Macro light function (20240805)
   - [ ] Test macro light
+
+  ## Sources
+
+  1. QMK docs
+    1. [Cycle layer button](https://docs.qmk.fm/feature_layers#example-keycode-to-cycle-through-layers)
+    2. [Indicators on progged keys](https://docs.qmk.fm/features/rgb_matrix#indicator-examples)
+  2. Reddit
+    1. [Colors per layer](https://www.reddit.com/r/olkb/comments/e0hurb/comment/fawrcem/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button)
+  3. Others
+    1. [Macros](https://getreuer.info/posts/keyboards/macros/index.html#process_record_user-in-depth)
+    2. [Rotary by layer](https://pastebin.com/rDUzHM81)

@@ -90,14 +90,16 @@ static int8_t prevLayerInt;
 void eeconfig_init_user(void) {  // EEPROM is getting reset!
   // use the non noeeprom versions, to write these values to EEPROM too
   rgb_matrix_enable(); // Enable RGB by default
-  rgb_matrix_sethsv(HSV_TEAL);  // Set it to teal by default
-  rgb_matrix_mode(RGB_MATRIX_GRADIENT_UP_DOWN); // set the default
   // update constant value
   rgbModelast = rgb_matrix_get_mode();
   rgbHSVlast = rgb_matrix_get_hsv();
   prevLayerInt = 0;
 }
 
+void keyboard_post_init_user(void) {
+  rgb_matrix_sethsv(HSV_TEAL);  // Set it to teal by default
+  rgb_matrix_mode(RGB_MATRIX_GRADIENT_UP_DOWN); // set the default
+}
 // function to hold color constants based on layer index
 uint8_t colorKeebH(int8_t i){
     // get the delta of the default vs the last h value.
@@ -148,7 +150,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   default:
     // _BASE
     // update constant value if on _BASE and there was a change coming in from _NUM
-    if (rgb_matrix_get_mode() != RGB_MATRIX_CYCLE_LEFT_RIGHT) {
+    if ((rgb_matrix_get_mode() != RGB_MATRIX_CYCLE_LEFT_RIGHT) && (prevLayerInt == 7)) {
       rgbModelast = rgb_matrix_get_mode();
       rgbHSVlast = rgb_matrix_get_hsv();
     }

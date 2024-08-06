@@ -116,18 +116,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // map what the rotary encoder for the knob does
 #if defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
-    [_FN] = { ENCODER_CCW_CW(LAYERDN, LAYERUP) },
+    [_FN] =   { ENCODER_CCW_CW(LAYERDN, LAYERUP) },
     [_BASE] = { ENCODER_CCW_CW(KC_MS_WH_LEFT, KC_MS_WH_RIGHT) },
-    [_LV] = { ENCODER_CCW_CW(KC_MS_WH_LEFT, KC_MS_WH_RIGHT) },
-    [_VS] = { ENCODER_CCW_CW(KC_LEFT, KC_RGHT) },
-    [_MAT] = { ENCODER_CCW_CW(KC_LEFT, KC_RGHT) },
-    [_CAD] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
-    [_NA] = { ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
-    [_NUM] = { ENCODER_CCW_CW(KC_MS_WH_DOWN, KC_MS_WH_UP) }
+    [_LV] =   { ENCODER_CCW_CW(KC_MS_WH_LEFT, KC_MS_WH_RIGHT) },
+    [_VS] =   { ENCODER_CCW_CW(KC_LEFT, KC_RGHT) },
+    [_MAT] =  { ENCODER_CCW_CW(KC_LEFT, KC_RGHT) },
+    [_CAD] =  { ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
+    [_NA] =   { ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
+    [_NUM] =  { ENCODER_CCW_CW(KC_MS_WH_DOWN, KC_MS_WH_UP) }
 };
 #endif // ENCODER_MAP_ENABLE
 
-// map waht the dipswitch does: turn lights on or off (LH=ON, RH=OFF)
+// map what the dipswitch does: turn lights on or off (LH=ON, RH=OFF)
 #ifdef DIP_SWITCH_ENABLE
 bool dip_switch_update_user(uint8_t index, bool active) {
     if (index == 0) {
@@ -136,15 +136,13 @@ bool dip_switch_update_user(uint8_t index, bool active) {
         } else {
           rgb_matrix_enable_noeeprom();
         }
-        //default_layer_set(1UL << (active ? 2 : 0));
     }
     return true;
 }
 #endif
 
 // LIGHTS PER LAYER
-// Modded from the link below to match/use Matrix effects [2.1]
-// From https://www.reddit.com/r/olkb/comments/e0hurb/comment/fawrcem/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+// Modded to match/use Matrix effects [See Readme Sources, 2.1]
 
 // create constant placeholders for RGB light mode and HSV
 static uint8_t rgbModelast;
@@ -171,13 +169,8 @@ void eeconfig_init_user(void) {  // EEPROM is getting reset!
   currLayerID = 1;
 }
 
+//after keeb initialized, make sure  to have _Base on and with proper lights
 void keyboard_post_init_user(void) {
-  print("keyboard post init ran\n");
-  // Customise these values to desired behaviour
-  //debug_enable=true;
-  //debug_matrix=true;
-  //debug_keyboard=true;
-  //debug_mouse=true;
   layer_state_set(2);
   rgb_matrix_sethsv(HSV_TEAL);  // Set it to teal by default
   rgb_matrix_mode(RGB_MATRIX_GRADIENT_UP_DOWN); // set the default
@@ -200,7 +193,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
 
       currLayerID+=1;
-      uprintf("LAYERUP! action: %2u\n",currLayerID);
       if (currLayerID > 6) {
           currLayerID = 1;
       }
@@ -220,7 +212,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
 
       currLayerID-=1;
-      uprintf("LAYERUP! action: %2u\n",currLayerID);
       if (currLayerID < LAYER_CYCLE_START) {
           currLayerID = 6;
       }
@@ -272,28 +263,27 @@ uint8_t colorKeebH(int8_t i){
 */
 /*
 HSV updateMkeysColor(uint8_t layerID){
-  HSV h={HSV_TEAL};
+  uprintf("updateMkeys called. Layer ID: %2u\n",layerID);
   switch(layerID){
     case 2:
-      h=HSV_ORANGE;
+      return HSV_ORANGE;
       break;
     case 3:
-      h=HSV_PURPLE;
+      return HSV_PURPLE;
       break;
     case 4:
-      h=HSV_RED;
+      return HSV_RED;
       break;
     case 5:
-      h=HSV_GREEN;
+      return HSV_GREEN;
       break;
     case 6:
-      h=HSV_CORAL;
+      return HSV_CORAL;
       break;
     default:
+      return HSV_TEAL;
       break;
   }
-  uprintf("updateMkeys called. hue returned: %3u\n",h.h);
-  return h;
 }
 */
 
@@ -383,7 +373,6 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     } else if(layer > 1 && layer < 7){
       print("M column color being called\n");
       for(uint8_t col = 0; col < 5; ++col){
-        uprintf("M_led_idx[%1u]=%2u\n",col,M_leds_idx[col]);
         //rgb_matrix_set_color(M_leds_idx[col],updateMkeysColor(layer));
       }
     }
