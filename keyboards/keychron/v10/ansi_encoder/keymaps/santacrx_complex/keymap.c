@@ -25,6 +25,10 @@
 
 // clang-format off
 
+//========================
+// Standard Keeb QMK defs
+//========================
+
 enum layers{
     _FN,
     _BASE,
@@ -127,6 +131,12 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 };
 #endif // ENCODER_MAP_ENABLE
 
+//=========
+//  MODS 
+//=========
+
+// DIPSWITCH
+// ---------
 // map what the dipswitch does: turn lights on or off (LH=ON, RH=OFF)
 #ifdef DIP_SWITCH_ENABLE
 bool dip_switch_update_user(uint8_t index, bool active) {
@@ -141,7 +151,8 @@ bool dip_switch_update_user(uint8_t index, bool active) {
 }
 #endif
 
-// LIGHTS PER LAYER
+// KNOB LAYER SELECTION WITH LIGHTS PER LAYER
+// ------------------------------------------
 // Modded to match/use Matrix effects [See Readme Sources, 2.1]
 
 // create constant placeholders for RGB light mode and HSV
@@ -151,6 +162,18 @@ static int8_t prevLayerInt;
 // global constants  for the layer change gig
 static uint8_t currLayerID;
 static uint8_t currLayerMask;  // mask is ID  ORed with b0010
+// init color selction per layer ID
+static uint8_t MkeyColors[6][3] = {
+  {HSV_TEAL},//0
+  {HSV_ORANGE},//1
+  {HSV_PURPLE},//2
+  {HSV_RED},//3
+  {HSV_GREEN},//4
+  {HSV_PINK}//5
+};
+// M column indeces definition for color changes
+static uint8_t M_leds_idx[] = {15,31,47,62,77};
+
 
 // initialization functions
 void eeconfig_init_user(void) {  // EEPROM is getting reset!
@@ -197,6 +220,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           currLayerID = 1;
       }
       uprintf("LAYERUP! New Setting: %2u\n",currLayerID);
+      rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID-1][0],MkeyColors[currLayerID-1][1],MkeyColors[currLayerID-1][2]);
       return false;
     case LAYERDN:
       // Our logic will happen on presses, nothing is done on releases
@@ -216,6 +240,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           currLayerID = 6;
       }
       uprintf("LAYERDN! New Setting:%2u\n",currLayerID);
+      rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID-1][0],MkeyColors[currLayerID-1][1],MkeyColors[currLayerID-1][2]);
       return false;
     // Process other keycodes normally
     default:
@@ -223,6 +248,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
 }
 
+// calculate mask value, and also set color for M column. this is a test
 void updateKnobLayer(void){
   currLayerMask = (int) pow(2,currLayerID) | 2; // 2^current layer, then or'd to 2 = 0000 0010
   uprintf("ID:%2u, Mask:%2u\n",currLayerID, currLayerMask);
@@ -230,72 +256,66 @@ void updateKnobLayer(void){
   //layer_state_set(currLayerMask);
 
   // might not need to clear layer, as we always return to base. might need to OR it to the existing come back. if so, need to clear mask when returning from 0? investigate
+  
+  // change color of M column based on ID layer selected
+  for(uint8_t col = 0; col < 5; ++col){
+    rgb_matrix_set_color(M_leds_idx[col],MkeyColors[currLayerID-1][0],MkeyColors[currLayerID-1][1],MkeyColors[currLayerID-1][2]);
+  }
 }
-
-static uint8_t MkeyColors[6][3] = {
-  {HSV_TEAL},//0
-  {HSV_ORANGE},//1
-  {HSV_PURPLE},//2
-  {HSV_RED},//3
-  {HSV_GREEN},//4
-  {HSV_CORAL}//5
-};
 
 // function to detect layer change and perform color change per layer
 layer_state_t layer_state_set_user(layer_state_t state) {
   // determine layer jump and direction
-  int8_t d = biton32(state) - prevLayerInt;
   uint8_t current_layer = get_highest_layer(state);
-  uprintf("state: %2u; biton32(state): %2u; highest layer: %2u\n",state,biton32(state),current_layer);
+  uprintf("state: %2u; biton32(state): %2u; highest layer: %2u; prevLayer: %2u; knobLayer: %2u;\n",state,biton32(state),current_layer,prevLayerInt,currLayerID);
   //static effect_params_t* params;
   //switch(biton32(state)) {
   switch(current_layer){
   case 0:
-    // _FN
-    //rgbModelast = rgb_matrix_get_mode();
-    rgb_matrix_mode_noeeprom(RGB_MATRIX_BAND_SPIRAL_VAL); // on NumPad, change it to rainbow
+    // _FN: sprial with color based on M layer ID
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_BAND_SPIRAL_VAL);
     rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID-1][0],MkeyColors[currLayerID-1][1],MkeyColors[currLayerID-1][2]);
     break;
   case 7:
     // _NUM
-    //rgbModelast = rgb_matrix_get_mode();
-    rgb_matrix_mode_noeeprom(RGB_MATRIX_CYCLE_LEFT_RIGHT); // on NumPad, change it to rainbow
+    // rolling rainbox, aka party!
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_CYCLE_LEFT_RIGHT);
     break;
   default:
-    // _BASE and the macro layers
-    // perform  layer masking update/activation
-    updateKnobLayer();
-    
-    // update constant value if on _BASE or above and there was a change coming in from _NUM
+    // _BASE and above, 
+    // If user changed color mode while in _NUM, update the constant value
     if ((rgb_matrix_get_mode() != RGB_MATRIX_CYCLE_LEFT_RIGHT) && (prevLayerInt == 7)) {
       rgbModelast = rgb_matrix_get_mode();
       rgbHSVlast = rgb_matrix_get_hsv();
     }
 
-    //If enabled, update color
+    //If enabled, update color to last stored value (or newest chosen one based on above)
     if (rgb_matrix_is_enabled()) {
       rgb_matrix_enable_noeeprom();
       rgb_matrix_mode_noeeprom(rgbModelast);
-      rgb_matrix_sethsv_noeeprom(rgbHSVlast);
+      rgb_matrix_sethsv_noeeprom(rgbHSVlast.h,rgbHSVlast.s,rgbHSVlast.v);
     } else { //Otherwise go back to disabled
 		  rgb_matrix_disable_noeeprom();
 	  }
+
+    // _BASE and the macro layers
+    // perform  layer masking update/activation
+    if (currLayerID != prevLayerInt){
+      print("updateKnob called\n");
+      updateKnobLayer();
+    }
     break;
   }
   prevLayerInt = biton32(state);
   return state;
 }
 
-//Define M column indexes for color changes
-static uint8_t M_leds_idx[] = {15,31,47,62,77};
-
 // Custom light functions based on layers and indicator used to only show active keys
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     uint8_t layer = get_highest_layer(layer_state); // get current layer
 
     // This will turn off keys that are transparent or KC_NO for _FN and _NUM
-    if ((layer  == 7)) {
-       
+    if ((layer  == 7)) {  
         for (uint8_t row = 0; row < MATRIX_ROWS; ++row) { // for every matrix row
             for (uint8_t col = 0; col < MATRIX_COLS; ++col) { // for every column
                 uint8_t index = g_led_config.matrix_co[row][col]; // get the index number
@@ -310,7 +330,6 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         }
     }
     
-    
     // If we are on _BASE layer and CAPS is on, OR on _NUM layer, then only highlight letters. 
     if ((host_keyboard_led_state().caps_lock && layer > 0) ||  layer == 7) {
         for (uint8_t i = led_min; i < led_max; i++) {
@@ -319,8 +338,8 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             }
         }
     // else, we can color M column if within the layer range
-    } else if(layer == 0 || (layer > 1 && layer < 7)){
-      print("M column color being called\n");
+    }else if((layer > 1 && layer < 7)){
+      //print("M column color being called\n");
       for(uint8_t col = 0; col < 5; ++col){
         rgb_matrix_set_color(M_leds_idx[col],MkeyColors[currLayerID-1][0],MkeyColors[currLayerID-1][1],MkeyColors[currLayerID-1][2]);
       }
