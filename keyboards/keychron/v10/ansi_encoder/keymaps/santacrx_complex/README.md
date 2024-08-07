@@ -26,12 +26,12 @@ Layer definition:
 |:---:|:---:|---------|-----------|-----------|-----------|-----------|
 |  0  | -- | `_FN`| _Empty_	| _Empty_	|Change M Layer|Only assinged keys|
 | *1* | x01 | *`_BASE`*		| *QWERTY*		|*Typing*		|*Side Scroll*|*Regular*| 
-|  2  | x06 | `_LV`	| ↑	|Labview	| 	|Reg+Green Macros|
+|  2  | x06 | `_LV`	| ↑	|Labview	| ↑	|Reg+Green Macros|
 |  3  | x0A | `_VS`		| ↑ 	|VSCode		|L/R Arrow	|Reg+Blue Macros|
-|  4  | x12 | `_MAT`	| ↑ 	|Matlab		| 	|Reg+Amber Macros|
+|  4  | x12 | `_MAT`	| ↑ 	|Matlab		| ↑	|Reg+Amber Macros|
 |  5  | x22 | `_CAD`		| ↑ 	|Onshape	|U/D Wheel	|Reg+Red Macros|
-|  6  | x42 |			| ↑	| 	| 	|			|
-|  7  | -- | `_NUM`		|NUM+MOUSE	| _Empty_	| 	|Party|
+|  6  | x42 |			| ↑	| ↑	| ↑	|			|
+|  7  | -- | `_NUM`		|NUM+MOUSE	| _Empty_	| ↑	|Party|
 
 ### Layout
 The overall layout is as follows, based on the tabulated description above:
@@ -119,18 +119,19 @@ When returning from 0, the respective overlay will be activated.
   - [ ] Perform layer change
 - [ ] Adapt lights to current layer setup
   - [x] Create debugging witnesses, test (20240802)
-  - [ ] Enable functionality
+  - [x] Enable functionality (20240806)
   - [x] Make a Macro index group (20240805)
   - [x] Make Macro light function (20240805)
   - [ ] Test macro light
+- [ ] Create Macros
 
-  ## Sources
+## Sources
 
-  1. QMK docs
-    1. [Cycle layer button](https://docs.qmk.fm/feature_layers#example-keycode-to-cycle-through-layers)
-    2. [Indicators on progged keys](https://docs.qmk.fm/features/rgb_matrix#indicator-examples)
-  2. Reddit
-    1. [Colors per layer](https://www.reddit.com/r/olkb/comments/e0hurb/comment/fawrcem/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button)
-  3. Others
-    1. [Macros](https://getreuer.info/posts/keyboards/macros/index.html#process_record_user-in-depth)
-    2. [Rotary by layer](https://pastebin.com/rDUzHM81)
+1. QMK docs
+  1. [Cycle layer button](https://docs.qmk.fm/feature_layers#example-keycode-to-cycle-through-layers)
+  2. [Indicators on progged keys](https://docs.qmk.fm/features/rgb_matrix#indicator-examples)
+2. Reddit
+  1. [Colors per layer](https://www.reddit.com/r/olkb/comments/e0hurb/comment/fawrcem/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button)
+3. Others
+  1. [Macros](https://getreuer.info/posts/keyboards/macros/index.html#process_record_user-in-depth)
+  2. [Rotary by layer](https://pastebin.com/rDUzHM81)

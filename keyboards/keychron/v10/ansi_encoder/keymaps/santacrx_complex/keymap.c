@@ -232,68 +232,14 @@ void updateKnobLayer(void){
   // might not need to clear layer, as we always return to base. might need to OR it to the existing come back. if so, need to clear mask when returning from 0? investigate
 }
 
-/*
-// function to hold color constants based on layer index
-uint8_t colorKeebH(int8_t i){
-    // get the delta of the default vs the last h value.
-    uint8_t h=rgbHSVlast.h; // teal H value is 128
-    switch(abs(i)){
-      case 1:
-      case 2:
-        // _BASE -> _FN1 or _FN2
-        h+=60*i; // +/-60 for _FN1, 120 _FN2
-        break;
-      default:
-        // _BASE and _NUM: don't change HUE VALUE
-        break;
-    }
-    // rebase HUE with original default
-    //h+=128; // teal H value is 128
-
-    // if  out of 8bit range, adjust/bound to limit
-    if(h>255){
-      h-=255;
-    }
-    if(h<0){
-      h+=255;
-    }
-    uprintf("h=%3u\n",h);
-    return h;
-}
-*/
-/*
-HSV updateMkeysColor(uint8_t layerID){
-  uprintf("updateMkeys called. Layer ID: %2u\n",layerID);
-  switch(layerID){
-    case 2:
-      return HSV_ORANGE;
-      break;
-    case 3:
-      return HSV_PURPLE;
-      break;
-    case 4:
-      return HSV_RED;
-      break;
-    case 5:
-      return HSV_GREEN;
-      break;
-    case 6:
-      return HSV_CORAL;
-      break;
-    default:
-      return HSV_TEAL;
-      break;
-  }
-}
-*/
-
-// function to update keeboard based on index input
-void updateKeeb(int8_t i) {
-    uint8_t h=128;//colorKeebH(i);
-    rgb_matrix_enable_noeeprom();
-    rgb_matrix_mode_noeeprom(rgbModelast);
-    rgb_matrix_sethsv_noeeprom(h,rgbHSVlast.s,rgbHSVlast.v);
-}
+static uint8_t MkeyColors[6][3] = {
+  {HSV_TEAL},//0
+  {HSV_ORANGE},//1
+  {HSV_PURPLE},//2
+  {HSV_RED},//3
+  {HSV_GREEN},//4
+  {HSV_CORAL}//5
+};
 
 // function to detect layer change and perform color change per layer
 layer_state_t layer_state_set_user(layer_state_t state) {
@@ -308,6 +254,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     // _FN
     //rgbModelast = rgb_matrix_get_mode();
     rgb_matrix_mode_noeeprom(RGB_MATRIX_BAND_SPIRAL_VAL); // on NumPad, change it to rainbow
+    rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID-1][0],MkeyColors[currLayerID-1][1],MkeyColors[currLayerID-1][2]);
     break;
   case 7:
     // _NUM
@@ -327,8 +274,10 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     //If enabled, update color
     if (rgb_matrix_is_enabled()) {
-      updateKeeb(d);
-	  } else { //Otherwise go back to disabled
+      rgb_matrix_enable_noeeprom();
+      rgb_matrix_mode_noeeprom(rgbModelast);
+      rgb_matrix_sethsv_noeeprom(rgbHSVlast);
+    } else { //Otherwise go back to disabled
 		  rgb_matrix_disable_noeeprom();
 	  }
     break;
@@ -370,10 +319,10 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             }
         }
     // else, we can color M column if within the layer range
-    } else if(layer > 1 && layer < 7){
+    } else if(layer == 0 || (layer > 1 && layer < 7)){
       print("M column color being called\n");
       for(uint8_t col = 0; col < 5; ++col){
-        //rgb_matrix_set_color(M_leds_idx[col],updateMkeysColor(layer));
+        rgb_matrix_set_color(M_leds_idx[col],MkeyColors[currLayerID-1][0],MkeyColors[currLayerID-1][1],MkeyColors[currLayerID-1][2]);
       }
     }
     
