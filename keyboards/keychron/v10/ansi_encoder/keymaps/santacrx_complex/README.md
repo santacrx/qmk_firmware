@@ -85,14 +85,15 @@ When returning from 0, the respective overlay will be activated.
   * Enhe
   * Degree symbol
   * Section symbol
+  * Mu
 * LabVIEW
   * While Loop
   * For Loop
   * Local Variable
   * Global Variable
-* Matlab
-  * Block comment
-  * Uncomment
+* Excel
+  * Add Row
+  * Add Column
 * CAD/OnShape
   * Pan modifier
   
@@ -113,10 +114,10 @@ When returning from 0, the respective overlay will be activated.
 - [x] Port over with desired layer change, test nothing broke in that port. (20240801)
   - [x] Enable Console, test output
   - [x] Disable lighting ported from `_layer`
-- [ ] Layer change function:
+- [x] Layer change function:
   - [x] Create supporting functions and constants (20240801)
   - [x] Test output to console, not yet perform change (20240805)
-  - [ ] Perform layer change
+  - [x] Perform layer change (20240808)
 - [ ] Adapt lights to current layer setup
   - [x] Create debugging witnesses, test (20240802)
   - [x] Enable functionality (20240806)
