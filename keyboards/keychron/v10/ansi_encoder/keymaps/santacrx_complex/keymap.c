@@ -35,7 +35,7 @@ enum layers{
     _FN,
     _BASE,
     _LV,
-    _EXC,
+    _DAT,
     _VS,
     _CAD,
     _NA,
@@ -70,12 +70,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_0,     _______,  _______,            _______,  _______,  LAYERGO,                       _______,            _______,                      _______,  _______,  _______),
 
     [_BASE] = LAYOUT_ansi_89(
-        _______,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   TG(_NUM),                KC_PSCR,
-        US_NTIL,  KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,      KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,                 KC_DEL,
-        US_DEG,   KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,                 KC_HOME,
-        US_SECT,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),          KC_END,
-        US_MICR,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RCTL(KC_APP),  KC_UP,
-        KC_1,     KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   LAYER00,                       KC_SPC,             KC_APP,                     KC_LEFT,       KC_DOWN,  KC_RGHT),
+        _______,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   TG(_NUM),              KC_PSCR,
+        US_NTIL,  KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,      KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,               KC_DEL,
+        US_DEG,   KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,               KC_HOME,
+        US_SECT,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),        KC_END,
+        US_MICR,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RCTL(KC_APP), KC_UP,
+        KC_1,     KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   LAYER00,                       KC_SPC,             KC_APP,                       KC_LEFT,      KC_DOWN, KC_RGHT),
 
     [_LV] = LAYOUT_ansi_89(
         WIN_ZUM,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
@@ -85,45 +85,45 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         LV_GVAR,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
         KC_2,     _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
 
-    [_EXC] = LAYOUT_ansi_89(
+    [_DAT] = LAYOUT_ansi_89(
         XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
-        _______,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        EX_ADDR,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        EX_ADDC,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
+        XXXXXXX,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
         KC_3,     _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
 
     [_VS] = LAYOUT_ansi_89(
         _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
-        _______,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
+        XXXXXXX,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
         KC_4,     _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
 
     [_CAD] = LAYOUT_ansi_89(
         KC_MUTE,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
-        _______,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
+        XXXXXXX,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
         KC_5,     _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
 
     [_NA] = LAYOUT_ansi_89(
         KC_MPLY,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
-        _______,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
+        XXXXXXX,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
         KC_6,     _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
 
     [_NUM] = LAYOUT_ansi_89(
-        KC_MS_BTN2,   RGB_TOG,  RGB_HUD,  	RGB_HUI,  	RGB_SAD,      RGB_SAI,    RGB_VAD,   RGB_VAI, RGB_RMOD,  RGB_MOD, RGB_SPD,  RGB_SPI,  KC_NO,    KC_NO,    _______,            _______,
-        KC_MS_ACCEL0, KC_NO, 	  KC_NO,      KC_NO,      KC_NO,        KC_NO,      KC_NO,     KC_NO,   KC_PSLS,   KC_PAST, KC_PMNS,  KC_NO,    _______,  _______,  _______,            _______,
-        KC_MS_ACCEL1, _______,  KC_NO,      KC_MS_UP,  	KC_NO,	      KC_NO,      KC_NO,     KC_P7,   KC_P8,     KC_P9,   KC_PPLS,  KC_NO,    KC_NO,    KC_NO,    _______,            KC_PGUP,
-        KC_MS_ACCEL2, KC_NO,   	KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT,  KC_NO,      KC_NO,     KC_P4,   KC_P5,     KC_P6,   KC_PPLS,  KC_NO,    KC_NO,              _______,            KC_PGDN,
-        KC_NO,   	    _______,       		    KC_NO,   	  KC_NO,        KC_NO,      KC_NO,     KC_NO,   KC_P0,     KC_P1,   KC_P2,    KC_P3,    KC_PENT,  KC_NO,    KC_NO,    _______,
-        KC_NUM,   	  _______,  _______,       		     	_______,      KC_MS_BTN1, _______,                       KC_P0,             KC_PDOT,                      _______,  _______,  _______),
+        KC_MS_BTN2, RGB_TOG,  RGB_HUD,  	RGB_HUI,  	RGB_SAD,      RGB_SAI,    RGB_VAD,   RGB_VAI, RGB_RMOD,  RGB_MOD, RGB_SPD,  RGB_SPI,  XXXXXXX,  XXXXXXX,  _______,            _______,
+        XXXXXXX,    XXXXXXX,  XXXXXXX,    XXXXXXX,    XXXXXXX,      XXXXXXX,    XXXXXXX,   XXXXXXX, KC_PSLS,   KC_PAST, KC_PMNS,  XXXXXXX,  _______,  _______,  _______,            _______,
+        XXXXXXX,    _______,  XXXXXXX,    KC_MS_UP,  	XXXXXXX,      XXXXXXX,    XXXXXXX,   KC_P7,   KC_P8,     KC_P9,   KC_PPLS,  XXXXXXX,  XXXXXXX,  XXXXXXX,  _______,            KC_PGUP,
+        XXXXXXX,    XXXXXXX,  KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT,  XXXXXXX,    XXXXXXX,   KC_P4,   KC_P5,     KC_P6,   KC_PPLS,  XXXXXXX,  XXXXXXX,            _______,            KC_PGDN,
+        XXXXXXX,    _______,       		    XXXXXXX,    XXXXXXX,      XXXXXXX,    XXXXXXX,   XXXXXXX, KC_P0,     KC_P1,   KC_P2,    KC_P3,    KC_PENT,  XXXXXXX,  XXXXXXX,  _______,
+        KC_NUM,     _______,  _______,       		     	_______,      KC_MS_BTN1, _______,                       KC_P0,             KC_PDOT,                      _______,  _______,  _______),
 };
 
 // map what the rotary encoder for the knob does
@@ -132,7 +132,7 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [_FN] =   { ENCODER_CCW_CW(LAYERDN, LAYERUP) },
     [_BASE] = { ENCODER_CCW_CW(KC_MS_WH_LEFT, KC_MS_WH_RIGHT) },
     [_LV] =   { ENCODER_CCW_CW(KC_MS_WH_LEFT, KC_MS_WH_RIGHT) },
-    [_EXC] =  { ENCODER_CCW_CW(KC_MS_WH_LEFT, KC_MS_WH_RIGHT) },
+    [_DAT] =  { ENCODER_CCW_CW(KC_MS_WH_LEFT, KC_MS_WH_RIGHT) },
     [_VS] =   { ENCODER_CCW_CW(KC_LEFT, KC_RGHT) },
     [_CAD] =  { ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
     [_NA] =   { ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
@@ -218,11 +218,8 @@ void keyboard_post_init_user(void) {
 void updateKnobLayer(void){
   currLayerMask = (int) pow(2,currLayerID) | 2; // 2^current layer, then or'd to 2 = 0000 0010
   uprintf("updateKnob called. ID:%2u, Mask:%2u\n",currLayerID, currLayerMask);
-  layer_clear();
+  //layer_clear();
   layer_state_set(currLayerMask);
-
-  // might not need to clear layer, as we always return to base. might need to OR it to the existing come back. if so, need to clear mask when returning from 0? investigate
-  
   
   // change color of M column based on ID layer selected
   for(uint8_t col = 0; col < 5; ++col){
@@ -290,7 +287,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
       }
       print("LAYER 0!\n");
-      layer_clear();
+      //layer_clear();
       layer_state_set(1);
       return false;
      // MACROS!!!
@@ -304,10 +301,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       uprintf("WIN_ZUM. Was %1u, ",winZoomOn);
       if (winZoomOn==0){
-        //SEND_STRING(SS_LGUI([X_EQL]));
+        register_code(KC_LGUI);
+        tap_code(KC_EQL);
+        unregister_code(KC_LGUI);
         winZoomOn=1;
       }else{
-        //SEND_STRING(SS_LGUI([X_ESC]));
+        register_code(KC_LGUI);
+        tap_code(KC_ESC);
+        unregister_code(KC_LGUI);
         winZoomOn=0;
       }
       uprintf("is %1u\n",winZoomOn);
@@ -376,17 +377,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         SS_TAP(X_ENT)
       );
       return false;
-    
+    */
     case EX_ADDR:
       // Our logic will happen on presses, nothing is done on releases
       if (!record->event.pressed) { 
         // We've already handled the keycode (doing nothing), let QMK know so no further code is run unnecessarily
         return false;
       }
-      SEND_STRING(
-        SS_TAP(X_LALT) 
-        "irr"
-      );
+      tap_code(KC_LALT); 
+      SEND_STRING("irr");
       return false;
     
     case EX_ADDC:
@@ -395,12 +394,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // We've already handled the keycode (doing nothing), let QMK know so no further code is run unnecessarily
         return false;
       }
-      SEND_STRING(
-        SS_TAP(X_LALT) 
-        "irc"
-      );
+      tap_code(KC_LALT); 
+      SEND_STRING("irc");
       return false;
-    */
 
     // Process other keycodes normally
     //---------------------------------
@@ -488,8 +484,10 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     // else, we can color M column if within the layer range
     }else if((layer > 1 && layer < 7)){
       //print("M column color being called\n");
+      HSV h = {MkeyColors[layer-1][0],MkeyColors[layer-1][1],MkeyColors[layer-1][2]};
+      RGB hr = hsv_to_rgb(h);
       for(uint8_t col = 0; col < 5; ++col){
-        rgb_matrix_set_color(M_leds_idx[col],MkeyColors[layer-1][0],MkeyColors[layer-1][1],MkeyColors[layer-1][2]);
+        rgb_matrix_set_color(M_leds_idx[col],hr.r,hr.g,hr.b);
       }
     }
     

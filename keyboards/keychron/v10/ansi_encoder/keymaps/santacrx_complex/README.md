@@ -1,19 +1,23 @@
 # @santacrx's Keychron V10 Firmware mod
 This is my customization for my v10 to maximize the capabilities plus visuals I wanted. 
-This keymap attempts to have custom lighting per layer and based on what the layer contents are. 
-This is a spin-off of my original layers, with a more complex change of states using the knob, thus freeing the key to the right of the rh spacebar for something else.
+This keymap has custom lighting per layer based on what the layer contents are. 
+This is a spin-off of my original keymap, with a more complex change of states using the knob, thus freeing the key to the right of the rh spacebar for something else.
 
-Basic function coloring is  still kept from `_layers`, but this is playground for using the knob to change macro and knob functionality without changing the basic keyboard ones. 
-So I can have different macro layers available for regular typing, one for LabVIEW use, one for MATLAB/Simulink, one for VSCODE, and one for CAD. 
-I will still have the qwerty layer and the numpad/mouse layer.
-I would like to use the switch at the back for lights on/off. 
+Basic function coloring is  still kept from `santacrx_layers`, but this is playground for using the knob to change macro and knob functionality without changing the basic keyboard ones. 
+I can have different macro layers available for regular typing, one for LabVIEW use, one for Excel & MATLAB/Simulink, one for VSCODE, and one for CAD, plus an extra one as a placeholder for future value. 
+I still have the qwerty layer and the numpad/mouse layer.
+Also the original OS switch at the back is now mapped to lights on/off. 
+
+I will like to have a VIA customization turned on.
+That is the next step.
+
 
 ## Layers
-After months of use of `_layers`, I realized that I was not using the secondary qwerty layer I had.
+After months of use of `santacrx_layers`, I realized that I was not using the secondary qwerty layer I had.
 I also noticed that the funcionalities I wanted on my knob where limited by the setup.
 Lastly, I had to sometimes reconfigure my macros in VIA just so I could be producitve that day depending on what I ws going to do. 
-This keymap attempts to address all of the above, by allowing multiple knob and macro configurations based on the software package to be used.
-It build up on using lights to indicate which state/layer we are in so that I can know where we are just by glancing at my keeb.
+This keymap addresses all of the above, by allowing multiple knob and macro configurations based on the software package to be used.
+Its build up on using lights to indicate which state/layer we are in so that I can know where we are just by glancing at my keeb.
 
 
 ### Description
@@ -22,16 +26,16 @@ I made the decision to have 8 layers just beacause its a clean binary number and
 
 Layer definition:
 
-| Bit  | Status |	Name	|	Keys	|	Macros	|	Knob	|	Lights	|
-|:---:|:---:|---------|-----------|-----------|-----------|-----------|
-|  0  | -- | `_FN`| _Empty_	| _Empty_	|Change M Layer|Only assinged keys|
-| *1* | x01 | *`_BASE`*		| *QWERTY*		|*Typing*		|*Side Scroll*|*Regular*| 
-|  2  | x06 | `_LV`	| ↑	|Labview	| ↑	|Reg+Green Macros|
-|  3  | x0A | `_VS`		| ↑ 	|VSCode		|L/R Arrow	|Reg+Blue Macros|
-|  4  | x12 | `_MAT`	| ↑ 	|Matlab		| ↑	|Reg+Amber Macros|
-|  5  | x22 | `_CAD`		| ↑ 	|Onshape	|U/D Wheel	|Reg+Red Macros|
-|  6  | x42 |			| ↑	| ↑	| ↑	|			|
-|  7  | -- | `_NUM`		|NUM+MOUSE	| _Empty_	| ↑	|Party|
+| Bit |Status|	Name	 |	Keys	  |	Macros	|	Knob	        |	Lights	|
+|:---:|:----:|---------|----------|---------|-----------    |-----------|
+|  0  | --   | `_FN`   | --	      | --	    |Change M Layer |Spiral|
+| *1* | x01  |*`_BASE`*|*QWERTY*  |*Typing*	|*Side Scroll*  |*Regular*| 
+|  2  | x06  | `_LV`	 | ↑	      |Labview	| ↑	            |↑+Orange Macros|
+|  3  | x0A  | `_DAT`	 | ↑ 	      |Data		  | ↑	            |↑+Purple Macros|
+|  4  | x12  | `_VS`	 | ↑ 	      |Code		  |L/R Arrow	    |↑+Red Macros|
+|  5  | x22  | `_CAD`	 | ↑ 	      |Onshape	|Volume	        |↑+Green Macros|
+|  6  | x42  |	`_NA`	 | ↑	      | --	    |Music	        |↑+Pink			|
+|  7  | --   | `_NUM`	 |NUM+MOUSE | --    	|U/D Wheel	    |Party|
 
 ### Layout
 The overall layout is as follows, based on the tabulated description above:
@@ -69,20 +73,23 @@ When returning from 0, the respective overlay will be activated.
 * Layer 1 *_BASE* set as default in initializing function
 * Debugging and console enabled
 * Use of `Layer_Move()` for layers 1-6
-* Use of `TG()` for layers 0 *_FN* and 7 *_NUM*
+* Use of custom function for layers 0 *_FN* and 7 *_NUM*
 
 ### Functions
 
 * Macro layer selector:
   * CW knob =+1 layer index, CCW =-1. 
   * [Sample](https://docs.qmk.fm/feature_layers#example-keycode-to-cycle-through-layers) used as backbone, create two keys to get that up and down
-  * Case structure to handle actual layer state HEX.
-    * maybe need to switch to butwise operations
-* 
+  * bitwise operations for masking
+  * custom functions to go to and get out of layer selection
+* Lights
+  * Change light setting based on which layer group we are on
+  * make the Macro key's background color based on macro layer selected
+  * layer selection layer color is based on macro setting (see table above)
 
 ### Macros
 * Base
-  * Enhe
+  * N tilde
   * Degree symbol
   * Section symbol
   * Mu
@@ -91,9 +98,12 @@ When returning from 0, the respective overlay will be activated.
   * For Loop
   * Local Variable
   * Global Variable
-* Excel
+* Excel/Data
   * Add Row
   * Add Column
+* Code
+  * Up directory
+  * Open CMD in admin mode
 * CAD/OnShape
   * Pan modifier
   
@@ -123,8 +133,8 @@ When returning from 0, the respective overlay will be activated.
   - [x] Enable functionality (20240806)
   - [x] Make a Macro index group (20240805)
   - [x] Make Macro light function (20240805)
-  - [ ] Test macro light
-- [ ] Create Macros
+  - [x] Test macro light (20240812)
+- [ ] Create Macros (in progress)
 
 ## Sources
 
