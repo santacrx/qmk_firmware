@@ -29,7 +29,7 @@ Layer definition:
 | Bit |Status|	Name	 |	Keys	  |	Macros	|	Knob	        |	Lights	|
 |:---:|:----:|---------|----------|---------|-----------    |-----------|
 |  0  | --   | `_FN`   | --	      | --	    |Change M Layer |Spiral|
-| *1* | x01  |*`_BASE`*|*QWERTY*  |*Typing*	|*Side Scroll*  |*Regular*| 
+| *1* | x02  |*`_BASE`*|*QWERTY*  |*Typing*	|*Side Scroll*  |*Regular*| 
 |  2  | x06  | `_LV`	 | ↑	      |Labview	| ↑	            |↑+Orange Macros|
 |  3  | x0A  | `_DAT`	 | ↑ 	      |Data		  | ↑	            |↑+Purple Macros|
 |  4  | x12  | `_VS`	 | ↑ 	      |Code		  |L/R Arrow	    |↑+Red Macros|
@@ -38,7 +38,7 @@ Layer definition:
 |  7  | --   | `_NUM`	 |NUM+MOUSE | --    	|U/D Wheel	    |Party|
 
 ### Layout
-The overall layout is as follows, based on the tabulated description above:
+The overall layout is as follows, based on the tabulated description above (showing `_CAD` overlay active on top of `_BASE`):
 
 ```
 Overlay feature layer
@@ -134,7 +134,7 @@ When returning from 0, the respective overlay will be activated.
   - [x] Make a Macro index group (20240805)
   - [x] Make Macro light function (20240805)
   - [x] Test macro light (20240812)
-- [ ] Create Macros (in progress)
+- [x] Create Macros (in progress)
 
 ## Sources
 
