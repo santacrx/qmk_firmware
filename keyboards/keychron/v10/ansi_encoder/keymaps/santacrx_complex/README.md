@@ -9,7 +9,11 @@ I still have the qwerty layer and the numpad/mouse layer.
 Also the original OS switch at the back is now mapped to lights on/off. 
 
 I will like to have a VIA customization turned on.
-That is the next step.
+That is the next step. I realized I could do the same behavior with just three layers a bunch of functions re-mapping the Macro Keys based on the global MacroID number.
+Might branch and try that to see if there is any performance or bin file size improvement. 
+For now, I'll keep this as it's doing what I wanted to.
+Also, just bought a V10 Max for home (my wired one being now at work).
+Need to figure out if this firmware will work with it.
 
 
 ## Layers
@@ -26,16 +30,16 @@ I made the decision to have 8 layers just beacause its a clean binary number and
 
 Layer definition:
 
-| Bit |Status|	Name	 |	Keys	  |	Macros	|	Knob	        |	Lights	|
+| Bit |Status|	Name   |	Keys  |	Macros	|	Knob        |	Lights	|
 |:---:|:----:|---------|----------|---------|-----------    |-----------|
 |  0  | --   | `_FN`   | --	      | --	    |Change M Layer |Spiral|
 | *1* | x02  |*`_BASE`*|*QWERTY*  |*Typing*	|*Side Scroll*  |*Regular*| 
-|  2  | x06  | `_LV`	 | ↑	      |Labview	| ↑	            |↑+Orange Macros|
-|  3  | x0A  | `_DAT`	 | ↑ 	      |Data		  | ↑	            |↑+Purple Macros|
-|  4  | x12  | `_VS`	 | ↑ 	      |Code		  |L/R Arrow	    |↑+Red Macros|
-|  5  | x22  | `_CAD`	 | ↑ 	      |Onshape	|Volume	        |↑+Green Macros|
-|  6  | x42  |	`_NA`	 | ↑	      | --	    |Music	        |↑+Pink			|
-|  7  | --   | `_NUM`	 |NUM+MOUSE | --    	|U/D Wheel	    |Party|
+|  2  | x06  | `_LV`   | ↑	      |Labview	| ↑	            |↑+Orange Macros|
+|  3  | x0A  | `_DAT`  | ↑ 	      |Data		| ↑	            |↑+Purple Macros|
+|  4  | x12  | `_VS`   | ↑ 	      |Code		|L/R Arrow	    |↑+Red Macros|
+|  5  | x22  | `_CAD`  | ↑ 	      |Onshape	|Volume	        |↑+Green Macros|
+|  6  | x42  |	`_NA`  | ↑	      | --	    |Music	        |↑+Pink			|
+|  7  | --   | `_NUM`  |NUM+MOUSE | --    	|U/D Wheel	    |Party|
 
 ### Layout
 The overall layout is as follows, based on the tabulated description above (showing `_CAD` overlay active on top of `_BASE`):
@@ -121,6 +125,9 @@ When returning from 0, the respective overlay will be activated.
   * `_FN` has diagonal to LH-HI corner (mimicking pointing to knob)
 
 ## Worflow / Desired Features / Bugs
+
+*v1.0* released with the workflow below. 
+All upcoming changes will be simple delta releases. 
 - [x] Port over with desired layer change, test nothing broke in that port. (20240801)
   - [x] Enable Console, test output
   - [x] Disable lighting ported from `_layer`
