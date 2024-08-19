@@ -128,21 +128,21 @@ When returning from 0, the respective overlay will be activated.
   - [x] Create supporting functions and constants (20240801)
   - [x] Test output to console, not yet perform change (20240805)
   - [x] Perform layer change (20240808)
-- [ ] Adapt lights to current layer setup
+- [x] Adapt lights to current layer setup
   - [x] Create debugging witnesses, test (20240802)
   - [x] Enable functionality (20240806)
   - [x] Make a Macro index group (20240805)
   - [x] Make Macro light function (20240805)
   - [x] Test macro light (20240812)
-- [x] Create Macros (in progress)
+- [x] Create Macros (20240813)
 
 ## Sources
 
 1. QMK docs
-  1. [Cycle layer button](https://docs.qmk.fm/feature_layers#example-keycode-to-cycle-through-layers)
-  2. [Indicators on progged keys](https://docs.qmk.fm/features/rgb_matrix#indicator-examples)
+    1. [Cycle layer button](https://docs.qmk.fm/feature_layers#example-keycode-to-cycle-through-layers)
+    2. [Indicators on progged keys](https://docs.qmk.fm/features/rgb_matrix#indicator-examples)
 2. Reddit
-  1. [Colors per layer](https://www.reddit.com/r/olkb/comments/e0hurb/comment/fawrcem/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button)
+    1. [Colors per layer](https://www.reddit.com/r/olkb/comments/e0hurb/comment/fawrcem/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button)
 3. Others
-  1. [Macros](https://getreuer.info/posts/keyboards/macros/index.html#process_record_user-in-depth)
-  2. [Rotary by layer](https://pastebin.com/rDUzHM81)
+    1. [Macros](https://getreuer.info/posts/keyboards/macros/index.html#process_record_user-in-depth)
+    2. [Rotary by layer](https://pastebin.com/rDUzHM81)
