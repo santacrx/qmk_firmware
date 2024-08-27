@@ -77,7 +77,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         XS_DEGR,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,               KC_HOME,
         XS_SECT,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),        KC_END,
         XS_MICR,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RCTL(KC_APP), KC_UP,
-        XXXXXXX,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   LAYER00,                       KC_SPC,             KC_APP,                       KC_LEFT,      KC_DOWN, KC_RGHT),
+        XXXXXXX,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   LAYER00,                       KC_SPC,             RALT(KC_APP),                 KC_LEFT,      KC_DOWN, KC_RGHT),
 
     [_LV] = LAYOUT_ansi_89(
         WIN_ZUM,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
@@ -463,7 +463,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 layer_state_t layer_state_set_user(layer_state_t state) {
   // determine layer jump and direction
   uint8_t current_layer = get_highest_layer(state);
-  uprintf("state: %2u; biton32(state): %2u; highest layer: %2u; prevLayer: %2u; knobLayer: %2u;\n",state,biton32(state),current_layer,prevLayerInt,currLayerID);
+  uprintf("state: %2u; biton32(state): %2u; highest lqayer: %2u; prevLayer: %2u; knobLayer: %2u;\n",state,biton32(state),current_layer,prevLayerInt,currLayerID);
   //static effect_params_t* params;
   //switch(biton32(state)) {
   switch(current_layer){
@@ -480,7 +480,8 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   default:
     // _BASE and above, 
     // If user changed color mode while in _FN, update the constant value
-    if ((rgb_matrix_get_mode() != RGB_MATRIX_CYCLE_LEFT_RIGHT) && (prevLayerInt == 0)) {
+    if ((rgb_matrix_get_mode() != RGB_MATRIX_BAND_SPIRAL_VAL) && (prevLayerInt == 0) && (currLayerID == 1)) {
+      printf("We are back from 0, no change in layers, and RBG mode changed, updating last value.\n");
       rgbModelast = rgb_matrix_get_mode();
       rgbHSVlast = rgb_matrix_get_hsv();
     }
@@ -502,7 +503,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     */
     break;
   }
-  prevLayerInt = biton32(state);
+  prevLayerInt = current_layer;
   return state;
 }
 
