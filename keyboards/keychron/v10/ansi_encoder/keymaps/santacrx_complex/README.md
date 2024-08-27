@@ -8,12 +8,15 @@ I can have different macro layers available for regular typing, one for LabVIEW 
 I still have the qwerty layer and the numpad/mouse layer.
 Also the original OS switch at the back is now mapped to lights on/off. 
 
-I will like to have a VIA customization turned on.
-That is the next step. I realized I could do the same behavior with just three layers a bunch of functions re-mapping the Macro Keys based on the global MacroID number.
+~I will like to have a VIA customization turned on.~
+~That is the next step.~
+VIA works natively! 
+I realized I could do the same behavior with just three layers a bunch of functions re-mapping the Macro Keys based on the global MacroID number.
 Might branch and try that to see if there is any performance or bin file size improvement. 
 For now, I'll keep this as it's doing what I wanted to.
 Also, just bought a V10 Max for home (my wired one being now at work).
-Need to figure out if this firmware will work with it.
+~Need to figure out if this firmware will work with it.~
+It does not, I have to port the keymap and functions but its a whole 'nother compilation and repo.
 
 
 ## Layers
@@ -125,6 +128,10 @@ When returning from 0, the respective overlay will be activated.
   * `_FN` has diagonal to LH-HI corner (mimicking pointing to knob)
 
 ## Worflow / Desired Features / Bugs
+*v1.0.1* modding to have a similar keymap layout with my V10 max. Also, removing redundant/wrongly implemented coloring functions. 
+Am considering heavily avoiding the multiple empty layers and just have more complex "keys" that will be changing behavior based on `currLayerID` and even mods.
+Would like to change behavior of some macros (hell, even the knob!) when holding Shift of Caps. 
+Will plan out and have that as v1.1.
 
 *v1.0* released with the workflow below. 
 All upcoming changes will be simple delta releases. 
