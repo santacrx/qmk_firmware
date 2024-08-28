@@ -64,7 +64,7 @@ enum custom_keycodes{
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_FN] = LAYOUT_ansi_89(
-        _______,  KC_CALC,  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FLXP,  RGB_VAD,   RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  _______,            _______,
+        _______,  QK_RBT,   KC_BRID,  KC_BRIU,  KC_TASK,  KC_FLXP,  RGB_VAD,   RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_CALC,            _______,
         _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
         _______,  RGB_TOG,  RGB_MOD,  RGB_VAI,  RGB_HUI,  RGB_SAI,  RGB_SPI,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            KC_PGUP,
         _______,  _______,  RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            KC_PGDN,
@@ -72,7 +72,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  _______,  _______,            _______,  _______,  LAYERGO,                       _______,            _______,                      _______,  _______,  _______),
 
     [_BASE] = LAYOUT_ansi_89(
-        _______,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   TG(_NUM),              KC_PSCR,
+        XXXXXXX,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   TG(_NUM),              KC_PSCR,
         XS_NTIL,  KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,      KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,               KC_DEL,
         XS_DEGR,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,               KC_HOME,
         XS_SECT,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),        KC_END,
@@ -146,6 +146,7 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 //  MODS 
 //=========
 
+
 // DIPSWITCH
 // ---------
 // map what the dipswitch does: turn lights on or off (LH=ON, RH=OFF)
@@ -162,6 +163,7 @@ bool dip_switch_update_user(uint8_t index, bool active) {
 }
 #endif
 
+
 // KNOB LAYER SELECTION WITH LIGHTS PER LAYER
 // ------------------------------------------
 // Modded to match/use Matrix effects [See Readme Sources, 2.1]
@@ -169,6 +171,7 @@ bool dip_switch_update_user(uint8_t index, bool active) {
 // create constant placeholders for RGB light mode and HSV
 static uint8_t rgbModelast;
 static HSV rgbHSVlast;
+static uint8_t rgbVALlast;
 static int8_t prevLayerInt;
 // global constants  for the layer change gig
 static uint8_t currLayerID;
@@ -232,6 +235,20 @@ void updateKnobLayer(void){
   */
 }
 
+/*
+// Helper for implementing tap vs. long-press keys. Given a tap-hold
+// key event, replaces the hold function with `long_press_keycode`.
+static bool process_tap_or_long_press_key(keyrecord_t* record, uint16_t long_press_keycode) {
+  if (record->tap.count == 0) {  // Key is being held.
+    if (record->event.pressed) {
+      tap_code16(long_press_keycode);
+    }
+    return false;  // Skip default handling.
+  }
+  return true;  // Continue default handling.
+}
+*/
+
 // Add the behaviour for custom keycodes
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // Get current mod and one-shot mod states.
@@ -240,63 +257,63 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   
   switch (keycode) {
 
-    // Cylce M layer by 1
-    //---------------------
+    // Cylce M layer by 1, or if SHIFT change RGB mode
+    //------------------------------------------------
     case LAYERUP:
       // Our logic will happen on presses, nothing is done on releases
-      if (!record->event.pressed) { 
-        // We've already handled the keycode (doing nothing), let QMK know so no further code is run unnecessarily
-        return false;
+      if (record->event.pressed) {
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          print("SHIFT + LAYERUP!\n");
+          tap_code16(RGB_MOD);
+        } else { // no shift held
+          // +1. then check if we are within the range, if not, go back to 1
+          currLayerID+=1;
+          if (currLayerID > 6) {
+              currLayerID = 1;
+          }
+          uprintf("LAYERUP! New Setting: %2u\n",currLayerID);
+          rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
+          }
       }
-
-      // +1. then check if we are within the range, if not, go back to 1
-      currLayerID+=1;
-      if (currLayerID > 6) {
-          currLayerID = 1;
-      }
-      uprintf("LAYERUP! New Setting: %2u\n",currLayerID);
-      rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
       return false;
 
     // Cycle M layer down 1  
     //----------------------
     case LAYERDN:
       // Our logic will happen on presses, nothing is done on releases
-      if (!record->event.pressed) { 
-        // We've already handled the keycode (doing nothing), let QMK know so no further code is run unnecessarily
-        return false;
+      if (record->event.pressed) { 
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          print("SHIFT + LAYERDN!\n");
+          tap_code16(RGB_RMOD);
+        } else { // no shift held
+          // -1. then check if we are within the range, if not, go back to 1
+          currLayerID-=1;
+          if (currLayerID < 1) {
+              currLayerID = 6;
+          }
+          uprintf("LAYERDN! New Setting:%2u\n",currLayerID);
+          rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
+        }
       }
-
-      // -1. then check if we are within the range, if not, go back to 1
-      currLayerID-=1;
-      if (currLayerID < 1) {
-          currLayerID = 6;
-      }
-      uprintf("LAYERDN! New Setting:%2u\n",currLayerID);
-      rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
       return false;
 
     // Process the M layer change/ application
     //-----------------------------------------
     case LAYERGO:
       // Our logic will happen on presses, nothing is done on releases
-      if (!record->event.pressed) { 
-        // We've already handled the keycode (doing nothing), let QMK know so no further code is run unnecessarily
-        return false;
+      if (record->event.pressed) { 
+        print("LAYERGO! \n");
+        updateKnobLayer();
       }
-      print("LAYERGO! \n");
-      updateKnobLayer();
       return false;
 
     case LAYER00:
       // Our logic will happen on presses, nothing is done on releases
-      if (!record->event.pressed) { 
-        // We've already handled the keycode (doing nothing), let QMK know so no further code is run unnecessarily
-        return false;
+      if (record->event.pressed) { 
+        print("LAYER 0!\n");
+        //layer_clear();
+        layer_state_set(1);
       }
-      print("LAYER 0!\n");
-      //layer_clear();
-      layer_state_set(1);
       return false;
     
     
@@ -325,13 +342,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case LV_WHIL:
       print("LV_GVAR\n");
       // Our logic will happen on presses, nothing is done on releases
-      if (!record->event.pressed) { 
-        // We've already handled the keycode (doing nothing), let QMK know so no further code is run unnecessarily
-        return false;
+      if (record->event.pressed) { 
+        tap_code16(LALT(KC_SPC)); 
+        SEND_STRING(SS_DELAY(150) "while" SS_DELAY(150));
+        tap_code(KC_ENT);
       }
-      tap_code16(LALT(KC_SPC)); 
-      SEND_STRING(SS_DELAY(150) "while" SS_DELAY(150));
-      tap_code(KC_ENT);
       return false;
     
     // tell labview to bring the for loop tool
@@ -339,41 +354,32 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       print("LV_FOR\n");
       // Our logic will happen on presses, nothing is done on releases
       if (!record->event.pressed) { 
-        // We've already handled the keycode (doing nothing), let QMK know so no further code is run unnecessarily
-        return false;
+        tap_code16(LALT(KC_SPC)); 
+        SEND_STRING(SS_DELAY(150) "for" SS_DELAY(150));
+        tap_code(KC_ENT);
       }
-      
-      tap_code16(LALT(KC_SPC)); 
-      SEND_STRING(SS_DELAY(150) "for" SS_DELAY(150));
-      tap_code(KC_ENT);
       return false;
     
     // tell labview to bring the local variable tool
     case LV_LVAR:
       print("LV_LVAR\n");
       // Our logic will happen on presses, nothing is done on releases
-      if (!record->event.pressed) { 
-        // We've already handled the keycode (doing nothing), let QMK know so no further code is run unnecessarily
-        return false;
+      if (record->event.pressed) { 
+        tap_code16(LALT(KC_SPC)); 
+        SEND_STRING(SS_DELAY(150) "local" SS_DELAY(150));
+        tap_code(KC_ENT);
       }
-      
-      tap_code16(LALT(KC_SPC)); 
-      SEND_STRING(SS_DELAY(150) "local" SS_DELAY(150));
-      tap_code(KC_ENT);
       return false;
     
     // tell labview to bring the global  variable tool
     case LV_GVAR:
       print("LV_GVAR\n");
       // Our logic will happen on presses, nothing is done on releases
-      if (!record->event.pressed) { 
-        // We've already handled the keycode (doing nothing), let QMK know so no further code is run unnecessarily
-        return false;
+      if (record->event.pressed) { 
+        tap_code16(LALT(KC_SPC)); 
+        SEND_STRING(SS_DELAY(150) "global" SS_DELAY(150));
+        tap_code(KC_ENT);
       }
-      
-      tap_code16(LALT(KC_SPC)); 
-      SEND_STRING(SS_DELAY(150) "global" SS_DELAY(150));
-      tap_code(KC_ENT);
       return false;
     
     // tell excel to add a row
@@ -484,10 +490,11 @@ layer_state_t layer_state_set_user(layer_state_t state) {
       printf("We are back from 0, no change in layers, and RBG mode changed, updating last value.\n");
       rgbModelast = rgb_matrix_get_mode();
       rgbHSVlast = rgb_matrix_get_hsv();
+      rgbVALlast = rgb_matrix_get_val();
     }
 
     rgb_matrix_mode_noeeprom(rgbModelast);
-    rgb_matrix_sethsv_noeeprom(rgbHSVlast.h,rgbHSVlast.s,rgbHSVlast.v);
+    rgb_matrix_sethsv_noeeprom(rgbHSVlast.h,rgbHSVlast.s,rgbVALlast);
     
     // _BASE and the macro layers
     /*
@@ -528,7 +535,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     }
     
     // If we are on _BASE layer and CAPS is on, OR on _NUM layer, then only highlight letters. 
-    if ((host_keyboard_led_state().caps_lock && layer > 0) ||  layer == 7) {
+    if ((host_keyboard_led_state().caps_lock && layer > 0)){ // ||  layer == 7) {
         for (uint8_t i = led_min; i < led_max; i++) {
             if (g_led_config.flags[i] != LED_FLAG_KEYLIGHT) {
                 rgb_matrix_set_color(i, RGB_BLACK);
