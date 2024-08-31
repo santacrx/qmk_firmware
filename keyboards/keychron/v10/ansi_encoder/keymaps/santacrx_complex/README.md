@@ -121,11 +121,20 @@ When returning from 0, the respective overlay will be activated.
   * Transparent or unsassigned keys have no backlight. 
   * CAPS only has alphas ON
 * Each layer has now a visible distinction, besides the stated above:
-  * `_NUM` is visibly different than the rest with rainbow pattern. 
+  * `_NUM` is visibly different than the rest with rainbow pattern.
   * `_BASE` and above, except `_NUM` 
     * share the same pattern
-    * Macro column has different color based on which layer is active
-  * `_FN` has diagonal to LH-HI corner (mimicking pointing to knob)
+    * Macro column has different color based on which layer is active      
+  * `_FN` has single color dual pinwheel with color referenced to current macro layer color
+
+#### Showcase
+* `_BASE` to `_NUM` and back:  
+[![NUM layer showcase](https://drive.google.com/file/d/1DHRFX05zgsYoAEck-ZUMgAMwF3xJfapj/view?usp=drive_link)]
+
+* `_BASE` to `_FN`, selecting macro layer with know, and then going back to `_BASE` where the macro keys are highlighted with the color  
+[![Macro changing color and showing in BASE](https://drive.google.com/file/d/1FKcpBM_1Ytzo7iH5WQSzKy3ju6HChUrq/view?usp=drive_link)]
+
+
 
 ## Worflow / Desired Features / Bugs
 *v1.0.1* modding to have a similar keymap layout with my V10 max. Also, removing redundant/wrongly implemented coloring functions. 
