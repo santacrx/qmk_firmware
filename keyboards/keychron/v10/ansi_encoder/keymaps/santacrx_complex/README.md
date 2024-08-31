@@ -129,10 +129,10 @@ When returning from 0, the respective overlay will be activated.
 
 #### Showcase
 * `_BASE` to `_NUM` and back:  
-[![NUM layer showcase](https://drive.google.com/uc?id=1DHRFX05zgsYoAEck-ZUMgAMwF3xJfapj)]
+[![NUM layer showcase](https://drive.usercontent.google.com/download?id=1DHRFX05zgsYoAEck-ZUMgAMwF3xJfapj&authuser=0)]
 
 * `_BASE` to `_FN`, selecting macro layer with know, and then going back to `_BASE` where the macro keys are highlighted with the color  
-[![Macro changing color and showing in BASE](https://drive.google.com/uc?id=1DHRFX05zgsYoAEck-ZUMgAMwF3xJfapj)]
+[![Macro changing color and showing in BASE](https://drive.usercontent.google.com/download?id=1DHRFX05zgsYoAEck-ZUMgAMwF3xJfapj&authuser=0)]
 
 
 
