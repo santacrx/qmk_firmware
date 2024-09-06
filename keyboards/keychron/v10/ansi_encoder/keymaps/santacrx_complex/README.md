@@ -130,13 +130,13 @@ When returning from 0, the respective overlay will be activated.
 #### Showcase
 * `_BASE` to `_NUM` and back:
 <p>
-    <img src="https://drive.usercontent.google.com/download?id=1FKcpBM_1Ytzo7iH5WQSzKy3ju6HChUrq" width="600" height="338" alt="_NUM layer showcase"/>
+    <img src="http://http://git.santacrx.info/assets/img/keebs/_complex_num.gif" width="600" height="338" alt="_NUM layer showcase"/>
 </p>  
 
 
 * `_BASE` to `_FN`, selecting macro layer with know, and then going back to `_BASE` where the macro keys are highlighted with the color  
 <p>
-    <img src="https://drive.usercontent.google.com/download?id=1DHRFX05zgsYoAEck-ZUMgAMwF3xJfapj" width="600" height="338" alt="Macro changing color and showing in _BASE"/>
+    <img src="http://http://git.santacrx.info/assets/img/keebs/_complex_layers.gif" width="600" height="338" alt="Macro changing color and showing in _BASE"/>
 </p>
 
 
