@@ -64,12 +64,12 @@ enum custom_keycodes{
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_FN] = LAYOUT_ansi_89(
-        _______,  QK_RBT,   KC_BRID,  KC_BRIU,  KC_TASK,  KC_FLXP,  RGB_VAD,   RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_CALC,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  RGB_TOG,  RGB_MOD,  RGB_VAI,  RGB_HUI,  RGB_SAI,  RGB_SPI,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            KC_PGUP,
-        _______,  _______,  RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            KC_PGDN,
-        _______,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  NK_TOGG,  _______,  _______,  _______,  _______,  _______,  _______,
-        _______,  _______,  _______,            _______,  _______,  LAYERGO,                       _______,            _______,                      _______,  _______,  _______),
+        _______,  QK_RBT,       KC_BRID,  KC_BRIU,  KC_TASK,  KC_FLXP,  RGB_VAD,   RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_CALC,            _______,
+        _______,  _______,      _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  RGB_TOG,      RGB_MOD,  RGB_VAI,  RGB_HUI,  RGB_SAI,  RGB_SPI,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            KC_PGUP,
+        _______,  _______,      RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            KC_PGDN,
+        _______,  LSFT_T(KC_NO),_______,  _______,  _______,  _______,   _______,  _______,  NK_TOGG,  _______,  _______,  _______,  _______,  _______,  _______,
+        _______,  _______,      _______,            _______,  _______,  LAYERGO,                       _______,            _______,                      _______,  _______,  _______),
 
     [_BASE] = LAYOUT_ansi_89(
         XXXXXXX,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   TG(_NUM),              KC_PSCR,
@@ -180,13 +180,13 @@ static uint8_t currLayerMask;  // mask is ID  ORed with b0010
 static uint8_t winZoomOn = 0;
 // init color selction per layer ID
 static uint8_t MkeyColors[7][3] = {
-  {HSV_TEAL},//0
-  {HSV_TEAL},//1
-  {HSV_GOLD},//2
-  {HSV_PURPLE},//3
-  {HSV_RED},//4
-  {HSV_GREEN},//5
-  {HSV_PINK}//6
+  {HSV_TEAL},   //0
+  {HSV_TEAL},   //1
+  {HSV_GOLD},   //2  _LV
+  {HSV_GREEN},  //3  _DAT
+  {HSV_PURPLE}, //4  _VS
+  {HSV_RED},    //5  _CAD
+  {HSV_PINK}    //6  _NA
 };
 // M column indeces definition for color changes
 static uint8_t M_leds_idx[] = {15,31,47,62,77};
@@ -264,7 +264,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
           print("SHIFT + LAYERUP!\n");
-          tap_code16(RGB_MOD);
+          tap_code16(KC_VOLU);
         } else { // no shift held
           // +1. then check if we are within the range, if not, go back to 1
           currLayerID+=1;
@@ -284,7 +284,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) { 
         if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
           print("SHIFT + LAYERDN!\n");
-          tap_code16(RGB_RMOD);
+          tap_code16(KC_VOLD);
         } else { // no shift held
           // -1. then check if we are within the range, if not, go back to 1
           currLayerID-=1;
@@ -343,8 +343,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       print("LV_GVAR\n");
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        tap_code16(LALT(KC_SPC)); 
-        SEND_STRING(SS_DELAY(150) "while" SS_DELAY(150));
+        tap_code16(LCTL(KC_SPC)); 
+        SEND_STRING(SS_DELAY(150) "while loop" SS_DELAY(150));
         tap_code(KC_ENT);
       }
       return false;
@@ -354,8 +354,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       print("LV_FOR\n");
       // Our logic will happen on presses, nothing is done on releases
       if (!record->event.pressed) { 
-        tap_code16(LALT(KC_SPC)); 
-        SEND_STRING(SS_DELAY(150) "for" SS_DELAY(150));
+        tap_code16(LCTL(KC_SPC)); 
+        SEND_STRING(SS_DELAY(150) "for loop" SS_DELAY(150));
         tap_code(KC_ENT);
       }
       return false;
@@ -365,7 +365,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       print("LV_LVAR\n");
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        tap_code16(LALT(KC_SPC)); 
+        tap_code16(LCTL(KC_SPC)); 
         SEND_STRING(SS_DELAY(150) "local" SS_DELAY(150));
         tap_code(KC_ENT);
       }
@@ -376,27 +376,51 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       print("LV_GVAR\n");
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        tap_code16(LALT(KC_SPC)); 
+        tap_code16(LCTL(KC_SPC)); 
         SEND_STRING(SS_DELAY(150) "global" SS_DELAY(150));
         tap_code(KC_ENT);
       }
       return false;
     
-    // tell excel to add a row
+    // tell excel to add a row, delete if shift is held
     case EX_ADDR:
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        tap_code(KC_LALT); 
-        send_string("irr");
+        // send commands depending if shift is held or not
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          // Temporarily delete shift.
+          del_oneshot_mods(MOD_MASK_SHIFT);
+          unregister_mods(MOD_MASK_SHIFT); 
+          // send macro 
+          tap_code16(LALT(KC_H));
+          send_string("dr");
+          // Restore mods.
+          register_mods(mods);            
+        } else { // no mods held
+          tap_code16(LALT(KC_H));
+          send_string("ir");
+        }
       }
       return false;
     
-    // tell excel to add a column
+    // tell excel to add a column, delete if shift is held
     case EX_ADDC:
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        tap_code(KC_LALT); 
-        send_string("irc");
+        // send commands depending if shif is held or nor 
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          // Temporarily delete shift.
+          del_oneshot_mods(MOD_MASK_SHIFT);
+          unregister_mods(MOD_MASK_SHIFT); 
+          // send macro 
+          tap_code16(LALT(KC_H));
+          send_string("dc");
+          // Restore mods.
+          register_mods(mods);            
+        } else { // no mods held
+          tap_code16(LALT(KC_H));
+          send_string("ic");
+        }
       }
       return false;
 
