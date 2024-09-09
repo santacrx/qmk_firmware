@@ -130,7 +130,7 @@ When returning from 0, the respective overlay will be activated.
 #### Showcase
 * `_BASE` to `_NUM` and back:  
 <p>
-    <img src="https://drive.usercontent.google.com/download?id=1FKcpBM_1Ytzo7iH5WQSzKy3ju6HChUrq" width="600" height="338" alt="_NUM layer showcase"/>
+    <img src="http://git.santacrx.info/assets/img/keebs/_complex_num.gif" width="600" height="338" alt="_NUM layer showcase"/>
 </p>  
 
 
