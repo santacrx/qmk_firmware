@@ -68,8 +68,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  _______,      _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
         _______,  RGB_TOG,      RGB_MOD,  RGB_VAI,  RGB_HUI,  RGB_SAI,  RGB_SPI,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            KC_PGUP,
         _______,  _______,      RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            KC_PGDN,
-        _______,  LSFT_T(KC_NO),_______,  _______,  _______,  _______,   _______,  _______,  NK_TOGG,  _______,  _______,  _______,  _______,  _______,  _______,
-        _______,  _______,      _______,            _______,  _______,  LAYERGO,                       _______,            _______,                      _______,  _______,  _______),
+        _______,  LSFT_T(KC_NO),_______,  _______,  _______,  _______,  _______,   _______,  NK_TOGG,  _______,  _______,  _______,  _______,  _______,  _______,
+        _______,  _______,      _______,            _______,  _______,  LAYER00,                       _______,            _______,                      _______,  _______,  _______),
 
     [_BASE] = LAYOUT_ansi_89(
         XXXXXXX,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   TG(_NUM),              KC_PSCR,
@@ -77,7 +77,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         XS_DEGR,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,               KC_HOME,
         XS_SECT,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),        KC_END,
         XS_MICR,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RCTL(KC_APP), KC_UP,
-        XXXXXXX,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   LAYER00,                       KC_SPC,             RALT(KC_APP),                 KC_LEFT,      KC_DOWN, KC_RGHT),
+        XXXXXXX,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   _______,                       KC_SPC,             RALT(KC_APP),                 KC_LEFT,      KC_DOWN, KC_RGHT),
 
     [_LV] = LAYOUT_ansi_89(
         WIN_ZUM,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
@@ -169,9 +169,10 @@ bool dip_switch_update_user(uint8_t index, bool active) {
 // Modded to match/use Matrix effects [See Readme Sources, 2.1]
 
 // create constant placeholders for RGB light mode and HSV
-static uint8_t rgbModelast;
-static HSV rgbHSVlast;
-static uint8_t rgbVALlast;
+static uint8_t rgbLastMode;
+static HSV rgbLastHsv;
+static uint8_t rgbLastVal;
+bool rgbLastState;
 static int8_t prevLayerInt;
 // global constants  for the layer change gig
 static uint8_t currLayerID;
@@ -197,14 +198,16 @@ void eeconfig_init_user(void) {  // EEPROM is getting reset!
   uprintf("eeconfig init ran\n");
   // set default layer to _BASE
   default_layer_set(2); // 2 = b0010
-  layer_state_set(2);
+  layer_state_set(3); // b0011 (so _FN and _BASE)
   // use the non noeeprom versions, to write these values to EEPROM too
   rgb_matrix_enable(); // Enable RGB by default
   rgb_matrix_sethsv(HSV_TEAL);  // Set it to teal by default
   rgb_matrix_mode(RGB_MATRIX_GRADIENT_UP_DOWN); // set the default
   // update constant value
-  rgbModelast = rgb_matrix_get_mode();
-  rgbHSVlast = rgb_matrix_get_hsv();
+  rgbLastMode = rgb_matrix_get_mode();
+  rgbLastHsv = rgb_matrix_get_hsv();
+  rgbLastVal = rgb_matrix_get_val();
+  rgbLastState = rgb_matrix_is_enabled();
   prevLayerInt = 0;
   currLayerID = 1;
   winZoomOn = 0;
@@ -215,7 +218,8 @@ void keyboard_post_init_user(void) {
   //debug_enable=true;
   //debug_matrix=true;
   //debug_keyboard=true;
-  layer_state_set(2);
+  layer_state_set(3);
+  rgb_matrix_enable();
   rgb_matrix_sethsv(HSV_TEAL);  // Set it to teal by default
   rgb_matrix_mode(RGB_MATRIX_GRADIENT_UP_DOWN); // set the default
 }
@@ -225,7 +229,7 @@ void updateKnobLayer(void){
   currLayerMask = (int) pow(2,currLayerID) | 2; // 2^current layer, then or'd to 2 = 0000 0010
   uprintf("updateKnob called. ID:%2u, Mask:%2u\n",currLayerID, currLayerMask);
   //layer_clear();
-  layer_state_set(currLayerMask);
+  layer_state_set(currLayerMask+1); // the +1to keep _FN always on in the background
   
   /* 
   // change color of M column based on ID layer selected
@@ -308,11 +312,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
 
     case LAYER00:
-      // Our logic will happen on presses, nothing is done on releases
+      // Our logic will happen on presses
       if (record->event.pressed) { 
         print("LAYER 0!\n");
-        //layer_clear();
-        layer_state_set(1);
+        if (record->tap.count==0) { // and when the key is held
+          print("  -> key being held!\n"); 
+          layer_state_set(1); // only show _FN
+        }
+      } else { // on release we return to normal
+      print("  -> key released!\n");
+        updateKnobLayer(); // update the layers based on setting
       }
       return false;
     
@@ -509,29 +518,25 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     break;
   default:
     // _BASE and above, 
-    // If user changed color mode while in _FN, update the constant value
+    // If user changed color mode while in _NUM, update the constant value
     if ((rgb_matrix_get_mode() != RGB_MATRIX_BAND_SPIRAL_VAL) && (prevLayerInt == 0) && (currLayerID == 1)) {
       printf("We are back from 0, no change in layers, and RBG mode changed, updating last value.\n");
-      rgbModelast = rgb_matrix_get_mode();
-      rgbHSVlast = rgb_matrix_get_hsv();
-      rgbVALlast = rgb_matrix_get_val();
+      uprintf("rgb_matrix_config.speed=%4u\n",rgb_matrix_config.speed);
+      // get new desired value when changed by user
+      rgbLastState = rgb_matrix_is_enabled();
+      rgbLastMode = rgb_matrix_get_mode();
+      rgbLastHsv = rgb_matrix_get_hsv();
+      rgbLastVal = rgb_matrix_get_val();
+      // write the current states to eeprom
+      rgbLastState ? rgb_matrix_enable() : rgb_matrix_disable();
+      rgb_matrix_mode(rgbLastMode);
+      rgb_matrix_sethsv(rgbLastHsv.h,rgbLastHsv.s,rgbLastVal);
+    } else {
+      // if no change, go to last settings without writing to eeprom
+      rgbLastState ? rgb_matrix_enable_noeeprom() : rgb_matrix_disable_noeeprom();
+      rgb_matrix_mode_noeeprom(rgbLastMode);
+      rgb_matrix_sethsv_noeeprom(rgbLastHsv.h,rgbLastHsv.s,rgbLastVal);
     }
-
-    rgb_matrix_mode_noeeprom(rgbModelast);
-    rgb_matrix_sethsv_noeeprom(rgbHSVlast.h,rgbHSVlast.s,rgbVALlast);
-    
-    // _BASE and the macro layers
-    /*
-    // perform  layer masking update/activation
-    if (currLayerID != prevLayerInt){
-      print("updateKnob called\n");
-      // change color of M column based on ID layer selected
-    }
-    
-    for(uint8_t col = 0; col < 5; ++col){
-      rgb_matrix_set_color(M_leds_idx[col],MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
-    }
-    */
     break;
   }
   prevLayerInt = current_layer;
@@ -571,7 +576,13 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
       HSV h = {MkeyColors[layer][0],MkeyColors[layer][1],MkeyColors[layer][2]};
       RGB hr = hsv_to_rgb(h);
       for(uint8_t col = 0; col < 5; ++col){
-        rgb_matrix_set_color(M_leds_idx[col],hr.r,hr.g,hr.b);
+        // if transparent or KC_NO, turn light off
+        if ((keymap_key_to_keycode(layer,(keypos_t){0,col+1}) == KC_TRNS) || 
+            (keymap_key_to_keycode(layer,(keypos_t){0,col+1}) == KC_NO) ){
+            rgb_matrix_set_color(M_leds_idx[col], RGB_BLACK);
+        }else{ // set the Macro key to the respective layer color
+            rgb_matrix_set_color(M_leds_idx[col],hr.r,hr.g,hr.b);
+        }
       }
     }
     
