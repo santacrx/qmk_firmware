@@ -1,4 +1,5 @@
 # @santacrx's Keychron V10 Firmware mod
+
 This is my customization for my v10 to maximize the capabilities plus visuals I wanted. 
 This keymap has custom lighting per layer based on what the layer contents are. 
 This is a spin-off of my original keymap, with a more complex change of states using the knob, thus freeing the key to the right of the rh spacebar for something else.
@@ -6,17 +7,18 @@ This is a spin-off of my original keymap, with a more complex change of states u
 Basic function coloring is  still kept from `santacrx_layers`, but this is playground for using the knob to change macro and knob functionality without changing the basic keyboard ones. 
 I can have different macro layers available for regular typing, one for LabVIEW use, one for Excel & MATLAB/Simulink, one for VSCODE, and one for CAD, plus an extra one as a placeholder for future value. 
 I still have the qwerty layer and the numpad/mouse layer.
-Also the original OS switch at the back is now mapped to lights on/off. 
+~Also the original OS switch at the back is now mapped to lights on/off.~
 
 ~I will like to have a VIA customization turned on.~
 ~That is the next step.~
-VIA works natively! 
+VIA remapping works.
 I realized I could do the same behavior with just three layers a bunch of functions re-mapping the Macro Keys based on the global MacroID number.
 Might branch and try that to see if there is any performance or bin file size improvement. 
 For now, I'll keep this as it's doing what I wanted to.
 Also, just bought a V10 Max for home (my wired one being now at work).
 ~Need to figure out if this firmware will work with it.~
-It does not, I have to port the keymap and functions but its a whole 'nother compilation and repo.
+Needed to use Keychron's fork. 
+See [here](https://github.com/santacrx/keychron_firmware/tree/master/keyboards/keychron/v10_max/ansi_encoder/keymaps/santacrx_complex) for details.
 
 
 ## Layers
@@ -33,16 +35,17 @@ I made the decision to have 8 layers just beacause its a clean binary number and
 
 Layer definition:
 
-| Bit |Status|	Name   |	Keys  |	Macros	|	Knob        |	Lights	|
+| Bit |Status|	Name   |	Keys    |	Macros	|	Knob          |	Lights	|
 |:---:|:----:|---------|----------|---------|-----------    |-----------|
 |  0  | --   | `_FN`   | --	      | --	    |Change M Layer |Spiral|
 | *1* | x02  |*`_BASE`*|*QWERTY*  |*Typing*	|*Side Scroll*  |*Regular*| 
 |  2  | x06  | `_LV`   | ↑	      |Labview	| ↑	            |↑+Orange Macros|
-|  3  | x0A  | `_DAT`  | ↑ 	      |Data		| ↑	            |↑+Purple Macros|
-|  4  | x12  | `_VS`   | ↑ 	      |Code		|L/R Arrow	    |↑+Red Macros|
-|  5  | x22  | `_CAD`  | ↑ 	      |Onshape	|Volume	        |↑+Green Macros|
-|  6  | x42  |	`_NA`  | ↑	      | --	    |Music	        |↑+Pink			|
+|  3  | x0A  | `_DAT`  | ↑ 	      |Data		  | ↑	            |↑+Purple Macros|
+|  4  | x12  | `_VS`   | ↑ 	      |Code		  |L/R Arrow	    |↑+Red Macros|
+|  5  | x22  | `_CAD`  | ↑ 	      |Onshape	|Pan/Rotate     |↑+Green Macros|
+|  6  | x42  | `_NA`   | ↑	      | --	    |Music	        |↑+Pink			|
 |  7  | --   | `_NUM`  |NUM+MOUSE | --    	|U/D Wheel	    |Party|
+
 
 ### Layout
 The overall layout is as follows, based on the tabulated description above (showing `_CAD` overlay active on top of `_BASE`):
@@ -63,10 +66,11 @@ Overlay feature layer
 |     /           /           |
 |  0 /___________/          0 |   0
 |                                 +
-`--- default_layer = 1            |
+'--- default_layer = 1            |
      layer_state   = 0x0022 <-----'
 ```
 
+### Functionality
 Layers 0 and 7 will be toggled by the FN and NUM keys respectively.
 Layers 1 through 6 are the default and overlays respectively.
 The cycle will be 1→0→1, or 1→7→1. 
@@ -74,7 +78,7 @@ When in 0, the knob cycles the overlay.
 The Macro keys' backlighting will change according to the selected overlay setting.
 When returning from 0, the respective overlay will be activated.
 
-## Features and Functionality
+## Features and Functions
 
 ### Layer Interface backbone
 * Layer 1 *_BASE* set as default in initializing function
@@ -93,26 +97,35 @@ When returning from 0, the respective overlay will be activated.
   * Change light setting based on which layer group we are on
   * make the Macro key's background color based on macro layer selected
   * layer selection layer color is based on macro setting (see table above)
+  * going to the layer can be momentary (holding) or locked in place (shift while releasing)
 
 ### Macros
+* Function
+  * knob
+    * press: execute layer change, mute when shifted
+    * rotation: layer selection, volumne when shifted
 * Base
   * N tilde
-  * Degree symbol
-  * Section symbol
-  * Mu
+  * Degree or pi symbol
+  * Plus minus or Section symbol
+  * mu or omega
+  * delta or Delta
 * LabVIEW
-  * While Loop
-  * For Loop
-  * Local Variable
-  * Global Variable
+  * While or For Loop
+  * Case or Sequence frame
+  * Local or Global Variable
+  * front/back panel switch
+  * knob press activates <-> deactivates windows zoom
 * Excel/Data
-  * Add Row
-  * Add Column
+  * Add or delete Row
+  * Add or delete Column
 * Code
   * Up directory
   * Open CMD in admin mode
 * CAD/OnShape
   * Pan modifier
+  * detail rotate modifier
+  * knob press changes up/down <-> right/left at knob
   
 ### Lights
 
@@ -129,16 +142,18 @@ When returning from 0, the respective overlay will be activated.
 
 #### Showcase
 * `_BASE` to `_NUM` and back:  
-<p>
-    <img src="http://git.santacrx.info/assets/img/keebs/_complex_num.gif" width="600" height="338" alt="_NUM layer showcase"/>
-</p>  
-
+[![NUM layer showcase](http://http://git.santacrx.info/assets/img/keebs/_complex_num.gif)]
 
 * `_BASE` to `_FN`, selecting macro layer with know, and then going back to `_BASE` where the macro keys are highlighted with the color  
-![Macro changing color and showing in _BASE]("http://git.santacrx.info/assets/img/keebs/_complex_layers.gif)
+[![Macro changing color and showing in BASE](http://http://git.santacrx.info/assets/img/keebs/_complex_layers.gif)]
 
 
 ## Worflow / Desired Features / Bugs
+*v1.1.0* added more complex macros and increasing flexibility and utility of knob using modifier keys.
+The lights work on all modes, albeit there is still a bug where right after flashing I have to toggle the light setting a  while between wired and wireless mode to stick. 
+🐛 After switching  between `_NUM` or `_FN` and `_BASE` a bunch of times since flashing, lights turn off in `_BASE` upon return. 
+🐛 When the above happens, switching RGB Mode in `_FN` does not stick.
+
 *v1.0.1* modding to have a similar keymap layout with my V10 max. Also, removing redundant/wrongly implemented coloring functions. 
 Am considering heavily avoiding the multiple empty layers and just have more complex "keys" that will be changing behavior based on `currLayerID` and even mods.
 Would like to change behavior of some macros (hell, even the knob!) when holding Shift of Caps. 
