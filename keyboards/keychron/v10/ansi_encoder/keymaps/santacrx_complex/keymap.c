@@ -42,21 +42,26 @@ enum layers{
 
 // adding custom keycodes for layer cycling using the knob
 enum custom_keycodes{
-  LAYERUP = SAFE_RANGE,
-  LAYERDN,
-  LAYERGO,
-  LAYER00,
-  WIN_ZUM,
-  LV_WHIL,
-  LV_FOR,
-  LV_LVAR,
-  LV_GVAR,
-  EX_ADDR,
-  EX_ADDC,
-  XS_DEGR,
-  XS_NTIL,
-  XS_MICR,
-  XS_SECT
+  LAYERUP = SAFE_RANGE, // Go up on the layer selector, vol up shen shifted
+  LAYERDN,  //  Go down on the layer selector, vol down when shifterd
+  LAYERGO,  //  execute layer masking, mute when shifted
+  LAYER00,  //  go to _FN layer when held. Shift locks _FN layer
+  WIN_ZUM,  //  call windows zoom on first tap, kills it in second
+  LV_LOOP,  //  labview, while loop tool
+  LV_CASE,   //  labview, for loop tool
+  LV_VARS,  //  labview, local variable
+  EX_ADDR,  //  excel, add row; delete when shifted
+  EX_ADDC,  //  excel, add col; delete when shifted
+  XS_DEGR,  //  degree, pi when shifted
+  XS_DELT,  //  delta
+  XS_NTIL,  //  ñ/Ñ
+  XS_MUOM,  //  Mu, Omega when shifted
+  XS_SECT,  //  plusminus, section when shifter
+  CAD_ARU,  //  arrow up or right, depending on CAD_CHG state
+  CAD_ARD,  //  arrow down or left, depending on CAD_CHG
+  CAD_CHG,  //  swap up/down with right/left
+  CAD_PAN,  //  toggle register ctrl+shift
+  CAD_ROT   //  toggle register shift 
 };
 
 #define KC_TASK LGUI(KC_TAB)
@@ -64,28 +69,28 @@ enum custom_keycodes{
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_FN] = LAYOUT_ansi_89(
-        _______,  QK_RBT,       KC_BRID,  KC_BRIU,  KC_TASK,  KC_FLXP,  RGB_VAD,   RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_CALC,            _______,
-        _______,  _______,      _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  RGB_TOG,      RGB_MOD,  RGB_VAI,  RGB_HUI,  RGB_SAI,  RGB_SPI,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            KC_PGUP,
-        _______,  _______,      RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            KC_PGDN,
-        _______,  LSFT_T(KC_NO),_______,  _______,  _______,  _______,  _______,   _______,  NK_TOGG,  _______,  _______,  _______,  _______,  _______,  _______,
-        _______,  _______,      _______,            _______,  _______,  LAYER00,                       _______,            _______,                      _______,  _______,  _______),
+        LAYERGO,  QK_RBT,   KC_BRID,  KC_BRIU,  KC_TASK,  KC_FLXP,  RGB_VAD,   RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_CALC,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  RGB_TOG,  RGB_MOD,  RGB_VAI,  RGB_HUI,  RGB_SAI,  RGB_SPI,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            KC_PGUP,
+        _______,  _______,  RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            KC_PGDN,
+        _______,  KC_LSFT,  _______,  _______,  _______,  _______,  _______,   _______,  NK_TOGG,  _______,  _______,  _______,  _______,  _______,  _______,
+        _______,  _______,  _______,            _______,  _______,  LAYER00,                       _______,            _______,                      _______,  _______,  _______),
 
     [_BASE] = LAYOUT_ansi_89(
         XXXXXXX,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   TG(_NUM),              KC_PSCR,
         XS_NTIL,  KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,      KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,               KC_DEL,
         XS_DEGR,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,               KC_HOME,
         XS_SECT,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),        KC_END,
-        XS_MICR,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RCTL(KC_APP), KC_UP,
-        XXXXXXX,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   _______,                       KC_SPC,             RALT(KC_APP),                 KC_LEFT,      KC_DOWN, KC_RGHT),
+        XS_MUOM,  _______,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_RCTL,      KC_UP,
+        XS_DELT,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   _______,                       KC_SPC,             RALT(KC_APP),                 KC_LEFT,      KC_DOWN, KC_RGHT),
 
     [_LV] = LAYOUT_ansi_89(
-        WIN_ZUM,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        LV_WHIL,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        LV_FOR,   _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        LV_LVAR,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
-        LV_GVAR,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
-        XXXXXXX,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
+        WIN_ZUM,    _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        LV_LOOP,    _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        LV_CASE,    _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        LV_VARS,    _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
+        LCTL(KC_E), _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        XXXXXXX,    _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
 
     [_DAT] = LAYOUT_ansi_89(
         XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
@@ -96,17 +101,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         XXXXXXX,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
 
     [_VS] = LAYOUT_ansi_89(
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
-        XXXXXXX,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
-        XXXXXXX,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
+        XXXXXXX,    _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        RCS(KC_P),  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        XXXXXXX,    _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        XXXXXXX,    _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
+        XXXXXXX,    _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        XXXXXXX,    _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
 
     [_CAD] = LAYOUT_ansi_89(
-        KC_MUTE,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        CAD_CHG,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        CAD_ROT,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        CAD_PAN,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
         XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
         XXXXXXX,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
         XXXXXXX,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
@@ -136,7 +141,7 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [_LV] =   { ENCODER_CCW_CW(KC_MS_WH_LEFT, KC_MS_WH_RIGHT) },
     [_DAT] =  { ENCODER_CCW_CW(KC_MS_WH_LEFT, KC_MS_WH_RIGHT) },
     [_VS] =   { ENCODER_CCW_CW(KC_LEFT, KC_RGHT) },
-    [_CAD] =  { ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
+    [_CAD] =  { ENCODER_CCW_CW(CAD_ARD, CAD_ARU) },
     [_NA] =   { ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
     [_NUM] =  { ENCODER_CCW_CW(KC_MS_WH_DOWN, KC_MS_WH_UP) }
 };
@@ -179,6 +184,8 @@ static uint8_t currLayerID;
 static uint8_t currLayerMask;  // mask is ID  ORed with b0010
 // global constant for Zoom On off for Macro
 static uint8_t winZoomOn = 0;
+// flag holder for  the CAD macros
+static uint8_t cadFlagState = 0; // b0:arrows; b1:rotation; b2:pan 
 // init color selction per layer ID
 static uint8_t MkeyColors[7][3] = {
   {HSV_TEAL},   //0
@@ -230,15 +237,82 @@ void updateKnobLayer(void){
   uprintf("updateKnob called. ID:%2u, Mask:%2u\n",currLayerID, currLayerMask);
   //layer_clear();
   layer_state_set(currLayerMask+1); // the +1to keep _FN always on in the background
-  
-  /* 
-  // change color of M column based on ID layer selected
-  for(uint8_t col = 0; col < 5; ++col){
-    rgb_matrix_set_color(M_leds_idx[col],MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
-  }
-  */
 }
 
+/*
+void santacrxLVmacro(char* normalStr, char* shiftedStr){
+  const uint8_t mods = get_mods();
+  const uint8_t oneshot_mods = get_oneshot_mods();
+
+  // send commands depending if shift is held or not
+  if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+    // Temporarily delete shift.
+    del_oneshot_mods(MOD_MASK_SHIFT);
+    unregister_mods(MOD_MASK_SHIFT); 
+    // send macro 
+    tap_code16(LCTL(KC_SPC)); 
+    SEND_STRING(SS_DELAY(150));
+    SEND_STRING(shiftedStr);
+    SEND_STRING(SS_DELAY(150));
+    tap_code(KC_ENT);
+    // Restore mods.
+    register_mods(mods);            
+  } else { // no mods held
+    tap_code16(LCTL(KC_SPC)); 
+    SEND_STRING(SS_DELAY(150));
+    SEND_STRING(normalStr);
+    SEND_STRING(SS_DELAY(150));
+    tap_code(KC_ENT);
+  }    
+}
+
+void santacrxALTmacro(uint16_t normalArr[], uint16_t shiftedArr[]){
+  const uint8_t mods = get_mods();
+  const uint8_t oneshot_mods = get_oneshot_mods();
+
+  if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+    // Temporarily delete shift.
+    del_oneshot_mods(MOD_MASK_SHIFT);
+    unregister_mods(MOD_MASK_SHIFT);  
+    // do the shifted behavior
+    register_code(KC_LALT);
+    int N=sizeof(shiftedArr) / sizeof(shiftedArr[0]);
+    for(int i=0; i<N; i++){
+      tap_code(shiftedArr[i]);
+    }
+    unregister_code(KC_LALT);
+    // Restore mods.
+    register_mods(mods);            
+  } else { // no shift held
+    register_code(KC_LALT);
+    int N=sizeof(normalArr) / sizeof(normalArr[0]);
+    for(int i=0; i<N; i++){
+      tap_code(normalArr[i]);
+    }
+    unregister_code(KC_LALT);
+  }
+    
+}
+*/
+
+void santacrxARRmacro(uint16_t kc_false,uint16_t kc_true){  
+  const uint8_t mods = get_mods();
+  const uint8_t oneshot_mods = get_oneshot_mods();
+
+  if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+    // Temporarily delete shift.
+    del_oneshot_mods(MOD_MASK_SHIFT);
+    unregister_mods(MOD_MASK_SHIFT);  
+  } // do behavior
+  // check for flags. add ctrl and shift accordingly
+  if ((cadFlagState&4)>>2) register_code(KC_LCTL);
+  if ((cadFlagState&2)>>1) register_code(KC_LSFT);
+  (cadFlagState&1) ? tap_code(kc_true) : tap_code(kc_false);
+  if ((cadFlagState&2)>>1) unregister_code(KC_LSFT);
+  if ((cadFlagState&4)>>2) unregister_code(KC_LCTL);
+  // Restore mods.
+  if ((mods | oneshot_mods) & MOD_MASK_SHIFT) register_mods(mods); 
+}
 /*
 // Helper for implementing tap vs. long-press keys. Given a tap-hold
 // key event, replaces the hold function with `long_press_keycode`.
@@ -260,9 +334,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   const uint8_t oneshot_mods = get_oneshot_mods();
   
   switch (keycode) {
+    //  Layer management
+    // ==================
 
-    // Cylce M layer by 1, or if SHIFT change RGB mode
-    //------------------------------------------------
+    // Cylce M layer by 1, or if SHIFT up volume
     case LAYERUP:
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) {
@@ -281,8 +356,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
 
-    // Cycle M layer down 1  
-    //----------------------
+    // Cycle M layer down 1, Vol down when shifted  
     case LAYERDN:
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
@@ -301,16 +375,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
 
-    // Process the M layer change/ application
-    //-----------------------------------------
+    // Process the M layer change/ application, mute when shifter
     case LAYERGO:
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        print("LAYERGO! \n");
-        updateKnobLayer();
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          print("SHIFT + LAYERGO!\n");
+          tap_code16(KC_MUTE);
+        } else { // no shift held
+          print("LAYERGO! \n");
+          updateKnobLayer();
+        }
       }
       return false;
 
+    // Go to _FN layer when held, process update of Macros on release, lock to _FN if Shift is held
     case LAYER00:
       // Our logic will happen on presses
       if (record->event.pressed) { 
@@ -319,15 +398,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           print("  -> key being held!\n"); 
           layer_state_set(1); // only show _FN
         }
-      } else { // on release we return to normal
-      print("  -> key released!\n");
-        updateKnobLayer(); // update the layers based on setting
+      } else { // on release we return to normal if we were held
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          //do not return to _BASE
+        } else { // if not mods
+          print("  -> key released!\n");
+          updateKnobLayer(); // update the layers based on setting 
+        }
       }
       return false;
     
-    
     // MACROS!!!
-    //-------------
+    //===========
     
     // use windows magnifier on one press, and kill it when clicked again
     case WIN_ZUM:
@@ -347,47 +429,76 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       uprintf("is %1u\n",winZoomOn);
       return false;
     
-    // tell labview to bring the while loop tool
-    case LV_WHIL:
-      print("LV_GVAR\n");
+    // LabVIEW: while loop / for loop when shifted
+    case LV_LOOP:
+      print("LV_LOOP\n");
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        tap_code16(LCTL(KC_SPC)); 
-        SEND_STRING(SS_DELAY(150) "while loop" SS_DELAY(150));
-        tap_code(KC_ENT);
+        //*
+        // send commands depending if shift is held or not
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          // Temporarily delete shift.
+          del_oneshot_mods(MOD_MASK_SHIFT);
+          unregister_mods(MOD_MASK_SHIFT); 
+          // send macro 
+          tap_code16(LCTL(KC_SPC)); 
+          SEND_STRING(SS_DELAY(150) "fs" SS_DELAY(150));
+          tap_code(KC_ENT);
+          // Restore mods.
+          register_mods(mods);            
+        } else { // no mods held
+          tap_code16(LCTL(KC_SPC)); 
+          SEND_STRING(SS_DELAY(150) "ws" SS_DELAY(150));
+          tap_code(KC_ENT);
+        }
+        //*/
+      //santacrxLVmacro("ws","fs");
       }
       return false;
     
-    // tell labview to bring the for loop tool
-    case LV_FOR:
-      print("LV_FOR\n");
+    // LabVIEW: local vairiable / global var when shifted
+    case LV_VARS:
+      print("LV_VARS\n");
       // Our logic will happen on presses, nothing is done on releases
-      if (!record->event.pressed) { 
-        tap_code16(LCTL(KC_SPC)); 
-        SEND_STRING(SS_DELAY(150) "for loop" SS_DELAY(150));
-        tap_code(KC_ENT);
+      if (record->event.pressed) { 
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          // Temporarily delete shift.
+          del_oneshot_mods(MOD_MASK_SHIFT);
+          unregister_mods(MOD_MASK_SHIFT); 
+          // send macro 
+          tap_code16(LCTL(KC_SPC)); 
+          SEND_STRING(SS_DELAY(150) "Global" SS_DELAY(150));
+          tap_code(KC_ENT);
+          // Restore mods.
+          register_mods(mods);            
+        } else { // no mods held
+          tap_code16(LCTL(KC_SPC)); 
+          SEND_STRING(SS_DELAY(150) "local" SS_DELAY(150));
+          tap_code(KC_ENT);
+        }
       }
       return false;
     
-    // tell labview to bring the local variable tool
-    case LV_LVAR:
-      print("LV_LVAR\n");
+    // LabVIEW: case structure / sequence when shift
+    case LV_CASE:
+      print("LV_CASE\n");
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        tap_code16(LCTL(KC_SPC)); 
-        SEND_STRING(SS_DELAY(150) "local" SS_DELAY(150));
-        tap_code(KC_ENT);
-      }
-      return false;
-    
-    // tell labview to bring the global  variable tool
-    case LV_GVAR:
-      print("LV_GVAR\n");
-      // Our logic will happen on presses, nothing is done on releases
-      if (record->event.pressed) { 
-        tap_code16(LCTL(KC_SPC)); 
-        SEND_STRING(SS_DELAY(150) "global" SS_DELAY(150));
-        tap_code(KC_ENT);
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          // Temporarily delete shift.
+          del_oneshot_mods(MOD_MASK_SHIFT);
+          unregister_mods(MOD_MASK_SHIFT); 
+          // send macro 
+          tap_code16(LCTL(KC_SPC)); 
+          SEND_STRING(SS_DELAY(150) "fss" SS_DELAY(150));
+          tap_code(KC_ENT);
+          // Restore mods.
+          register_mods(mods);            
+        } else { // no mods held
+          tap_code16(LCTL(KC_SPC)); 
+          SEND_STRING(SS_DELAY(150) "cs" SS_DELAY(150));
+          tap_code(KC_ENT);
+        }
       }
       return false;
     
@@ -433,6 +544,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
 
+    // eñe, upper case when shift if held. 
     case XS_NTIL:
       if (record->event.pressed) {
         if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
@@ -457,57 +569,166 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
 
+    // delta, upper and lower case
+    case XS_DELT:
+      if (record->event.pressed) {
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          // Temporarily delete shift.
+          del_oneshot_mods(MOD_MASK_SHIFT);
+          unregister_mods(MOD_MASK_SHIFT);  
+          // do the shifted behavior
+          register_code(KC_LALT);
+
+          unregister_code(KC_LALT);
+          // Restore mods.
+          register_mods(mods);            
+        } else { // no shift held
+          register_code(KC_LALT);
+          tap_code(KC_P2);
+          tap_code(KC_P3);
+          tap_code(KC_P5);
+          unregister_code(KC_LALT);
+        }
+      }
+      return false;
+  
+    // degree symbol on it's own,  pi when shifted
     case XS_DEGR:
       if(record->event.pressed){
-        register_code(KC_LALT);
-        tap_code(KC_P0);
-        tap_code(KC_P1);
-        tap_code(KC_P7);
-        tap_code(KC_P6);
-        unregister_code(KC_LALT);
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          // Temporarily delete shift.
+          del_oneshot_mods(MOD_MASK_SHIFT);
+          unregister_mods(MOD_MASK_SHIFT);  
+          // do the shifted behavior
+          register_code(KC_LALT);
+          tap_code(KC_P2);
+          tap_code(KC_P2);
+          tap_code(KC_P7);
+          unregister_code(KC_LALT);
+          // Restore mods.
+          register_mods(mods);            
+        } else { // no shift held
+          register_code(KC_LALT);
+          tap_code(KC_P0);
+          tap_code(KC_P1);
+          tap_code(KC_P7);
+          tap_code(KC_P6);
+          unregister_code(KC_LALT);
+        }
       }
       return false;
-      
-    case XS_MICR:
+
+    // Mu when on normal operation, Omega when shifted   
+    case XS_MUOM:
       if(record->event.pressed){
-        register_code(KC_LALT);
-        tap_code(KC_P2);
-        tap_code(KC_P3);
-        tap_code(KC_P0);
-        unregister_code(KC_LALT);
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held? omega
+          // Temporarily delete shift.
+          del_oneshot_mods(MOD_MASK_SHIFT);
+          unregister_mods(MOD_MASK_SHIFT);  
+          // do the shifted behavior
+          register_code(KC_LALT);
+          tap_code(KC_P2);
+          tap_code(KC_P3);
+          tap_code(KC_P4);
+          unregister_code(KC_LALT);
+          // Restore mods.
+          register_mods(mods);            
+        } else { // no shift held, mu
+          register_code(KC_LALT);
+          tap_code(KC_P2);
+          tap_code(KC_P3);
+          tap_code(KC_P0);
+          unregister_code(KC_LALT);
+        }
       }
       return false;
       
+    // plusminus, section symbol when shifted
     case XS_SECT:
       if(record->event.pressed){
-        register_code(KC_LALT);
-        tap_code(KC_P2);
-        tap_code(KC_P1);
-        unregister_code(KC_LALT);
+        //*
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          // Temporarily delete shift.
+          del_oneshot_mods(MOD_MASK_SHIFT);
+          unregister_mods(MOD_MASK_SHIFT);  
+          // do the shifted behavior
+          register_code(KC_LALT);
+          tap_code(KC_P2);
+          tap_code(KC_P1);
+          unregister_code(KC_LALT);
+          // Restore mods.
+          register_mods(mods);            
+        } else { // no shift held
+          register_code(KC_LALT);
+          tap_code(KC_P2);
+          tap_code(KC_P4);
+          tap_code(KC_P1);
+          unregister_code(KC_LALT);
+        }
+        //*/
+       //santacrxALTmacro([KC_P2,KC_P4,KC_P1],[KC_P2,KC_P1]);
       }
       return false;
 
+    // invert only Arrow flag
+    case CAD_CHG:
+      if(record->event.pressed){
+        cadFlagState=cadFlagState^1; // state XORs with b001
+      }
+      return false;
+
+    // invert only Rotate flag
+    case CAD_ROT:
+      if(record->event.pressed){
+        // if Pan is True flag is TRUE, XOR with b100; if FALSE XOR wit b110
+        //((cadFlagState&4)>>2) ? cadFlagState=cadFlagState^4 : cadFlagState=cadFlagState^2;
+        cadFlagState=cadFlagState^2; // state XORs with b010
+      }
+      return false;
+
+    // invert only PAN flag
+    case CAD_PAN:
+      if(record->event.pressed){
+        // if Rotate flag is TRUE, XOR with b100; if FALSE XOR wit b110
+        //((cadFlagState&2)>>1) ? cadFlagState=cadFlagState^4 : cadFlagState=cadFlagState^6;
+        cadFlagState=cadFlagState^4; // state XORs with b100
+      }
+      return false;
+
+    // up arrow or right arrow if flag is true
+    case CAD_ARU:
+      if(record->event.pressed){
+        santacrxARRmacro(KC_UP,KC_RIGHT);
+      }
+      return false;
+
+    // down arrow or left arrow if flag is true
+    case CAD_ARD:
+      if(record->event.pressed){        
+        santacrxARRmacro(KC_DOWN,KC_LEFT);
+      }
+      return false;
 
     // Process other keycodes normally
-    //---------------------------------
+    //=================================
     default:
-      
       return true;
   }
   return false;
 }
 
-
+// # RGB HANDLERS
+// ## LAYER COLOR BEHAVIOR
 // function to detect layer change and perform color change per layer
 layer_state_t layer_state_set_user(layer_state_t state) {
   // determine layer jump and direction
   uint8_t current_layer = get_highest_layer(state);
   uprintf("state: %2u; biton32(state): %2u; highest lqayer: %2u; prevLayer: %2u; knobLayer: %2u;\n",state,biton32(state),current_layer,prevLayerInt,currLayerID);
-  //static effect_params_t* params;
-  //switch(biton32(state)) {
+  // Perform action based on which highes layer is active
   switch(current_layer){
   case 0:
     // _FN: sprial with color based on M layer ID
+    rgb_matrix_enable();
     rgb_matrix_mode_noeeprom(RGB_MATRIX_BAND_SPIRAL_VAL);
     rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
     break;
@@ -543,6 +764,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return state;
 }
 
+// ## CUSTOM INDICATION BEHAVIOR
 // Custom light functions based on layers and indicator used to only show active keys
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     uint8_t layer = get_highest_layer(layer_state); // get current layer
@@ -572,7 +794,6 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         }
     // else, we can color M column if within the layer range
     }else if((layer > 1 && layer < 7)){
-      //print("M column color being called\n");
       HSV h = {MkeyColors[layer][0],MkeyColors[layer][1],MkeyColors[layer][2]};
       RGB hr = hsv_to_rgb(h);
       for(uint8_t col = 0; col < 5; ++col){
@@ -582,10 +803,12 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             rgb_matrix_set_color(M_leds_idx[col], RGB_BLACK);
         }else{ // set the Macro key to the respective layer color
             rgb_matrix_set_color(M_leds_idx[col],hr.r,hr.g,hr.b);
+            if (layer==5 && (cadFlagState & (int) pow(2,col+1))){
+                rgb_matrix_set_color(M_leds_idx[col], RGB_WHITE);
+            }
         }
       }
     }
     
-
     return false;
 }
