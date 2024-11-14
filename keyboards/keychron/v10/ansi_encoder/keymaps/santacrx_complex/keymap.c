@@ -239,11 +239,10 @@ void updateKnobLayer(void){
   layer_state_set(currLayerMask+1); // the +1to keep _FN always on in the background
 }
 
-//*
+// Function that hanldes the LabVIEW macros, as its a repetitive action with a couple varying inputs
 void santacrxLVmacro(char* normalStr, char* shiftedStr){
   const uint8_t mods = get_mods();
   const uint8_t oneshot_mods = get_oneshot_mods();
-
   // send commands depending if shift is held or not
   if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
     // Temporarily delete shift.
@@ -265,19 +264,19 @@ void santacrxLVmacro(char* normalStr, char* shiftedStr){
     tap_code(KC_ENT);
   }    
 }
-/*
-void santacrxALTmacro(uint16_t normalArr[], uint16_t shiftedArr[]){
+// Function that hanldes symbol generation macro using ATL and numpad. 
+void santacrxALTmacro(int ni,uint16_t normalArr[], int si,uint16_t shiftedArr[]){
   const uint8_t mods = get_mods();
   const uint8_t oneshot_mods = get_oneshot_mods();
-
+  //uint16_t N;
   if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
     // Temporarily delete shift.
     del_oneshot_mods(MOD_MASK_SHIFT);
     unregister_mods(MOD_MASK_SHIFT);  
     // do the shifted behavior
     register_code(KC_LALT);
-    int N=sizeof(shiftedArr) / sizeof(shiftedArr[0]);
-    for(int i=0; i<N; i++){
+    //N = sizeof(shiftedArr) / sizeof(shiftedArr[0]);
+    for(int i=0; i<si; i++){
       tap_code(shiftedArr[i]);
     }
     unregister_code(KC_LALT);
@@ -285,16 +284,15 @@ void santacrxALTmacro(uint16_t normalArr[], uint16_t shiftedArr[]){
     register_mods(mods);            
   } else { // no shift held
     register_code(KC_LALT);
-    int N=sizeof(normalArr) / sizeof(normalArr[0]);
-    for(int i=0; i<N; i++){
+    //N = sizeof(normalArr) / sizeof(normalArr[0]);
+    for(int i=0; i<ni; i++){
       tap_code(normalArr[i]);
     }
     unregister_code(KC_LALT);
   }
     
 }
-*/
-
+// Function to handle arrow modding macro of the knob for the _CAD function
 void santacrxARRmacro(uint16_t kc_false,uint16_t kc_true){  
   const uint8_t mods = get_mods();
   const uint8_t oneshot_mods = get_oneshot_mods();
@@ -501,126 +499,45 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // eñe, upper case when shift if held. 
     case XS_NTIL:
       if (record->event.pressed) {
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT);  
-          // do the shifted behavior
-          register_code(KC_LALT);
-          tap_code(KC_P1);
-          tap_code(KC_P6);
-          tap_code(KC_P5);
-          unregister_code(KC_LALT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no shift held
-          register_code(KC_LALT);
-          tap_code(KC_P1);
-          tap_code(KC_P6);
-          tap_code(KC_P4);
-          unregister_code(KC_LALT);
-        }
+        uint16_t arr1[]={KC_P1,KC_P6,KC_P4};
+        uint16_t arr2[]={KC_P1,KC_P6,KC_P5};
+        santacrxALTmacro(3,arr1,3,arr2);
       }
       return false;
 
     // delta, upper and lower case
     case XS_DELT:
       if (record->event.pressed) {
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT);  
-          // do the shifted behavior
-          register_code(KC_LALT);
-
-          unregister_code(KC_LALT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no shift held
-          register_code(KC_LALT);
-          tap_code(KC_P2);
-          tap_code(KC_P3);
-          tap_code(KC_P5);
-          unregister_code(KC_LALT);
-        }
+        uint16_t arr1[]={KC_P2,KC_P3,KC_P5};
+        //uint16_t arr2[]={};
+        santacrxALTmacro(3,arr1,3,arr1);
       }
       return false;
   
     // degree symbol on it's own,  pi when shifted
     case XS_DEGR:
       if(record->event.pressed){
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT);  
-          // do the shifted behavior
-          register_code(KC_LALT);
-          tap_code(KC_P2);
-          tap_code(KC_P2);
-          tap_code(KC_P7);
-          unregister_code(KC_LALT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no shift held
-          register_code(KC_LALT);
-          tap_code(KC_P0);
-          tap_code(KC_P1);
-          tap_code(KC_P7);
-          tap_code(KC_P6);
-          unregister_code(KC_LALT);
-        }
+        uint16_t arr1[]={KC_P0,KC_P1,KC_P7,KC_P6};
+        uint16_t arr2[]={KC_P2,KC_P2,KC_P7};
+        santacrxALTmacro(3,arr1,4,arr2);
       }
       return false;
 
     // Mu when on normal operation, Omega when shifted   
     case XS_MUOM:
       if(record->event.pressed){
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held? omega
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT);  
-          // do the shifted behavior
-          register_code(KC_LALT);
-          tap_code(KC_P2);
-          tap_code(KC_P3);
-          tap_code(KC_P4);
-          unregister_code(KC_LALT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no shift held, mu
-          register_code(KC_LALT);
-          tap_code(KC_P2);
-          tap_code(KC_P3);
-          tap_code(KC_P0);
-          unregister_code(KC_LALT);
-        }
+        uint16_t arr1[]={KC_P2,KC_P3,KC_P0};
+        uint16_t arr2[]={KC_P2,KC_P3,KC_P4};
+        santacrxALTmacro(3,arr1,3,arr2);
       }
       return false;
       
     // plusminus, section symbol when shifted
     case XS_SECT:
       if(record->event.pressed){
-        //*
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT);  
-          // do the shifted behavior
-          register_code(KC_LALT);
-          tap_code(KC_P2);
-          tap_code(KC_P1);
-          unregister_code(KC_LALT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no shift held
-          register_code(KC_LALT);
-          tap_code(KC_P2);
-          tap_code(KC_P4);
-          tap_code(KC_P1);
-          unregister_code(KC_LALT);
-        }
-        //*/
-       //santacrxALTmacro([KC_P2,KC_P4,KC_P1],[KC_P2,KC_P1]);
+        uint16_t arr1[]={KC_P2,KC_P4,KC_P1};
+        uint16_t arr2[]={KC_P2,KC_P1};
+        santacrxALTmacro(3,arr1,2,arr2);
       }
       return false;
 
