@@ -499,8 +499,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // eñe, upper case when shift if held. 
     case XS_NTIL:
       if (record->event.pressed) {
-        uint16_t arr1[]={KC_P1,KC_P6,KC_P4};
-        uint16_t arr2[]={KC_P1,KC_P6,KC_P5};
+        uint16_t arr1[3]={KC_P1,KC_P6,KC_P4};
+        uint16_t arr2[3]={KC_P1,KC_P6,KC_P5};
         santacrxALTmacro(3,arr1,3,arr2);
       }
       return false;
@@ -508,7 +508,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // delta, upper and lower case
     case XS_DELT:
       if (record->event.pressed) {
-        uint16_t arr1[]={KC_P2,KC_P3,KC_P5};
+        uint16_t arr1[3]={KC_P2,KC_P3,KC_P5};
         //uint16_t arr2[]={};
         santacrxALTmacro(3,arr1,3,arr1);
       }
@@ -517,17 +517,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // degree symbol on it's own,  pi when shifted
     case XS_DEGR:
       if(record->event.pressed){
-        uint16_t arr1[]={KC_P0,KC_P1,KC_P7,KC_P6};
-        uint16_t arr2[]={KC_P2,KC_P2,KC_P7};
-        santacrxALTmacro(3,arr1,4,arr2);
+        uint16_t arr1[4]={KC_P0,KC_P1,KC_P7,KC_P6};
+        uint16_t arr2[3]={KC_P2,KC_P2,KC_P7};
+        santacrxALTmacro(4,arr1,3,arr2);
       }
       return false;
 
     // Mu when on normal operation, Omega when shifted   
     case XS_MUOM:
       if(record->event.pressed){
-        uint16_t arr1[]={KC_P2,KC_P3,KC_P0};
-        uint16_t arr2[]={KC_P2,KC_P3,KC_P4};
+        uint16_t arr1[3]={KC_P2,KC_P3,KC_P0};
+        uint16_t arr2[3]={KC_P2,KC_P3,KC_P4};
         santacrxALTmacro(3,arr1,3,arr2);
       }
       return false;
@@ -535,8 +535,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // plusminus, section symbol when shifted
     case XS_SECT:
       if(record->event.pressed){
-        uint16_t arr1[]={KC_P2,KC_P4,KC_P1};
-        uint16_t arr2[]={KC_P2,KC_P1};
+        uint16_t arr1[3]={KC_P2,KC_P4,KC_P1};
+        uint16_t arr2[2]={KC_P2,KC_P1};
         santacrxALTmacro(3,arr1,2,arr2);
       }
       return false;
