@@ -239,7 +239,7 @@ void updateKnobLayer(void){
   layer_state_set(currLayerMask+1); // the +1to keep _FN always on in the background
 }
 
-/*
+//*
 void santacrxLVmacro(char* normalStr, char* shiftedStr){
   const uint8_t mods = get_mods();
   const uint8_t oneshot_mods = get_oneshot_mods();
@@ -265,7 +265,7 @@ void santacrxLVmacro(char* normalStr, char* shiftedStr){
     tap_code(KC_ENT);
   }    
 }
-
+/*
 void santacrxALTmacro(uint16_t normalArr[], uint16_t shiftedArr[]){
   const uint8_t mods = get_mods();
   const uint8_t oneshot_mods = get_oneshot_mods();
@@ -434,25 +434,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       print("LV_LOOP\n");
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        //*
-        // send commands depending if shift is held or not
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT); 
-          // send macro 
-          tap_code16(LCTL(KC_SPC)); 
-          SEND_STRING(SS_DELAY(150) "fs" SS_DELAY(150));
-          tap_code(KC_ENT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no mods held
-          tap_code16(LCTL(KC_SPC)); 
-          SEND_STRING(SS_DELAY(150) "ws" SS_DELAY(150));
-          tap_code(KC_ENT);
-        }
-        //*/
-      //santacrxLVmacro("ws","fs");
+        santacrxLVmacro("ws","fs");
       }
       return false;
     
@@ -461,21 +443,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       print("LV_VARS\n");
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT); 
-          // send macro 
-          tap_code16(LCTL(KC_SPC)); 
-          SEND_STRING(SS_DELAY(150) "Global" SS_DELAY(150));
-          tap_code(KC_ENT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no mods held
-          tap_code16(LCTL(KC_SPC)); 
-          SEND_STRING(SS_DELAY(150) "local" SS_DELAY(150));
-          tap_code(KC_ENT);
-        }
+        santacrxLVmacro("Global","local");
       }
       return false;
     
@@ -483,22 +451,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case LV_CASE:
       print("LV_CASE\n");
       // Our logic will happen on presses, nothing is done on releases
-      if (record->event.pressed) { 
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT); 
-          // send macro 
-          tap_code16(LCTL(KC_SPC)); 
-          SEND_STRING(SS_DELAY(150) "fss" SS_DELAY(150));
-          tap_code(KC_ENT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no mods held
-          tap_code16(LCTL(KC_SPC)); 
-          SEND_STRING(SS_DELAY(150) "cs" SS_DELAY(150));
-          tap_code(KC_ENT);
-        }
+      if (record->event.pressed) {
+        santacrxLVmacro("fss","cs");        
       }
       return false;
     
