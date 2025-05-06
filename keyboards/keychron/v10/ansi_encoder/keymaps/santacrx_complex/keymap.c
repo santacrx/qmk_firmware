@@ -222,7 +222,7 @@ void eeconfig_init_user(void) {  // EEPROM is getting reset!
 
 //after keeb initialized, make sure  to have _Base on and with proper lights
 void keyboard_post_init_user(void) {
-  //debug_enable=true;
+  debug_enable=true;
   //debug_matrix=true;
   //debug_keyboard=true;
   layer_state_set(3);
@@ -325,6 +325,37 @@ static bool process_tap_or_long_press_key(keyrecord_t* record, uint16_t long_pre
 }
 */
 
+// Add a global modifier behavior to knob encoder
+bool encoder_update_user(uint8_t index, bool clockwise) {
+  // Get current mod and one-shot mod states and mod-detect logic
+  const bool shift_pressed = (get_mods() | get_oneshot_mods()) & MOD_MASK_SHIFT;
+  const bool ctrl_pressed = (get_mods() | get_oneshot_mods()) & MOD_MASK_CTRL;
+  // get current layer, determine withing range of layers to apply mask to
+  uint8_t layer = get_highest_layer(layer_state); 
+  const bool good_layers = layer > 0 && layer < 7;
+  uprintf("Encoder turned %s\n", clockwise ? "CW" : "CCW");
+  if (shift_pressed && good_layers) {
+    uprintf(" + Shift Pressed\n");  
+    if (clockwise) {
+          tap_code(KC_VOLU);
+      } else {
+          tap_code(KC_VOLD);
+      }
+      return false; // Skip encoder_map
+  }
+  if (ctrl_pressed && good_layers) {
+    uprintf(" + Ctrl Pressed\n");  
+    if (clockwise) {
+          tap_code(KC_PGDN);
+      } else {
+          tap_code(KC_PGUP);
+      }
+      return false; // Skip encoder_map
+  }
+  
+  return true; // Let encoder_map handle the default case
+}
+
 // Add the behaviour for custom keycodes
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // Get current mod and one-shot mod states.
@@ -335,55 +366,40 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     //  Layer management
     // ==================
 
-    // Cylce M layer by 1, or if SHIFT up volume
+    // Cylce M layer by 1
     case LAYERUP:
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) {
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          print("SHIFT + LAYERUP!\n");
-          tap_code16(KC_VOLU);
-        } else { // no shift held
-          // +1. then check if we are within the range, if not, go back to 1
-          currLayerID+=1;
-          if (currLayerID > 6) {
-              currLayerID = 1;
-          }
-          uprintf("LAYERUP! New Setting: %2u\n",currLayerID);
-          rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
-          }
+        // +1. then check if we are within the range, if not, go back to 1
+        currLayerID+=1;
+        if (currLayerID > 6) {
+            currLayerID = 1;
+        }
+        uprintf("LAYERUP! New Setting: %2u\n",currLayerID);
+        rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
       }
       return false;
 
-    // Cycle M layer down 1, Vol down when shifted  
+    // Cycle M layer down 1
     case LAYERDN:
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          print("SHIFT + LAYERDN!\n");
-          tap_code16(KC_VOLD);
-        } else { // no shift held
-          // -1. then check if we are within the range, if not, go back to 1
-          currLayerID-=1;
-          if (currLayerID < 1) {
-              currLayerID = 6;
-          }
-          uprintf("LAYERDN! New Setting:%2u\n",currLayerID);
-          rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
+        // -1. then check if we are within the range, if not, go back to 1
+        currLayerID-=1;
+        if (currLayerID < 1) {
+            currLayerID = 6;
         }
+        uprintf("LAYERDN! New Setting:%2u\n",currLayerID);
+        rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
       }
       return false;
 
-    // Process the M layer change/ application, mute when shifter
+    // Process the M layer change/ application
     case LAYERGO:
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          print("SHIFT + LAYERGO!\n");
-          tap_code16(KC_MUTE);
-        } else { // no shift held
-          print("LAYERGO! \n");
-          updateKnobLayer();
-        }
+        print("LAYERGO! \n");
+        updateKnobLayer();
       }
       return false;
 
