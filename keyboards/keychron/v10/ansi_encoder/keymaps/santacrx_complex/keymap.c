@@ -21,6 +21,7 @@
 #include QMK_KEYBOARD_H
 #include "print.h"
 #include "math.h"
+#include "debug.h"
 //#include "keychron_common.h"
 
 // clang-format off
@@ -135,6 +136,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 // map what the rotary encoder for the knob does
 #if defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
+// Map normal encoder behavior
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [_FN] =   { ENCODER_CCW_CW(LAYERDN, LAYERUP) },
     [_BASE] = { ENCODER_CCW_CW(KC_MS_WH_LEFT, KC_MS_WH_RIGHT) },
@@ -145,6 +147,38 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [_NA] =   { ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
     [_NUM] =  { ENCODER_CCW_CW(KC_MS_WH_DOWN, KC_MS_WH_UP) }
 };
+// Add a global modifier behavior to override map above
+bool encoder_map_user(uint8_t index, bool clockwise) {
+  // Get current mod and one-shot mod states and mod-detect logic
+  const bool shift_pressed = (get_mods() | get_oneshot_mods()) & MOD_MASK_SHIFT;
+  //const bool ctrl_pressed = (get_mods() | get_oneshot_mods()) & MOD_MASK_CTRL;
+  // Get layers and determine ranges where this will be active
+  uint8_t layer = get_highest_layer(layer_state);
+  const bool good_layers = layer > 0 && layer < 7;
+  // debug print to console
+  uprintf("Encoder turned %s on layer %d\n", clockwise ? "CW" : "CCW", layer);
+  // logic
+  if (shift_pressed && good_layers) {
+      uprintf(" + Shift Pressed\n");
+      if (clockwise) {
+          tap_code(KC_VOLU);
+      } else {
+          tap_code(KC_VOLD);
+      }
+      return false; // Skip encoder_map
+  } /*
+  if (ctrl_pressed && good_layers) {
+      uprintf(" + Ctrl Pressed\n");
+      if (clockwise) {
+          tap_code(KC_PGDN);
+      } else {
+          tap_code(KC_PGUP);
+      }
+      return false; // Skip encoder_map
+  } */
+  // do nothing otherwise
+  return true; // Let encoder_map handle the default case
+}
 #endif // ENCODER_MAP_ENABLE
 
 //=========
@@ -324,37 +358,6 @@ static bool process_tap_or_long_press_key(keyrecord_t* record, uint16_t long_pre
   return true;  // Continue default handling.
 }
 */
-
-// Add a global modifier behavior to knob encoder
-bool encoder_update_user(uint8_t index, bool clockwise) {
-  // Get current mod and one-shot mod states and mod-detect logic
-  const bool shift_pressed = (get_mods() | get_oneshot_mods()) & MOD_MASK_SHIFT;
-  const bool ctrl_pressed = (get_mods() | get_oneshot_mods()) & MOD_MASK_CTRL;
-  // get current layer, determine withing range of layers to apply mask to
-  uint8_t layer = get_highest_layer(layer_state); 
-  const bool good_layers = layer > 0 && layer < 7;
-  uprintf("Encoder turned %s\n", clockwise ? "CW" : "CCW");
-  if (shift_pressed && good_layers) {
-    uprintf(" + Shift Pressed\n");  
-    if (clockwise) {
-          tap_code(KC_VOLU);
-      } else {
-          tap_code(KC_VOLD);
-      }
-      return false; // Skip encoder_map
-  }
-  if (ctrl_pressed && good_layers) {
-    uprintf(" + Ctrl Pressed\n");  
-    if (clockwise) {
-          tap_code(KC_PGDN);
-      } else {
-          tap_code(KC_PGUP);
-      }
-      return false; // Skip encoder_map
-  }
-  
-  return true; // Let encoder_map handle the default case
-}
 
 // Add the behaviour for custom keycodes
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
