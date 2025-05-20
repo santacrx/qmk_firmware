@@ -134,8 +134,44 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_NUM,     _______,  _______,       		     	_______,      KC_MS_BTN1, _______,                       KC_P0,             KC_PDOT,                      _______,  _______,  _______),
 };
 
+
+// Add global variable to track modifier states for encoder
+static uint8_t encoder_mod_mask = 0;
+static bool encoder_mod_active = false;
+
+// Hook into QMK's matrix scanning to maintain modifier state
+void matrix_scan_user(void) {
+    // Only run this code when encoder mods are being tracked
+    if (encoder_mod_active) {
+        // Get the current physical modifier state
+        uint8_t current_mods = get_mods();
+        
+        // If encoder was used with shift and shift is still physically held
+        if ((encoder_mod_mask & MOD_MASK_SHIFT) && (current_mods & MOD_MASK_SHIFT)) {
+            // Keep encoder aware that shift is active, but don't re-register
+            encoder_mod_mask |= MOD_MASK_SHIFT;
+        } else {
+            // Shift was released, clear from our tracking
+            encoder_mod_mask &= ~MOD_MASK_SHIFT;
+        }
+        
+        // Same for CTRL
+        if ((encoder_mod_mask & MOD_MASK_CTRL) && (current_mods & MOD_MASK_CTRL)) {
+            encoder_mod_mask |= MOD_MASK_CTRL;
+        } else {
+            encoder_mod_mask &= ~MOD_MASK_CTRL;
+        }
+        
+        // If all tracked mods are released, stop tracking
+        if (encoder_mod_mask == 0) {
+            encoder_mod_active = false;
+        }
+    }
+}
+
 // map what the rotary encoder for the knob does
-#if defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
+#if defined(ENCODER_ENABLE)
+#if defined(ENCODER_MAP_ENABLE)
 // Map normal encoder behavior
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [_FN] =   { ENCODER_CCW_CW(LAYERDN, LAYERUP) },
@@ -147,39 +183,125 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [_NA] =   { ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
     [_NUM] =  { ENCODER_CCW_CW(KC_MS_WH_DOWN, KC_MS_WH_UP) }
 };
+#else
 // Add a global modifier behavior to override map above
-bool encoder_map_user(uint8_t index, bool clockwise) {
-  // Get current mod and one-shot mod states and mod-detect logic
-  const bool shift_pressed = (get_mods() | get_oneshot_mods()) & MOD_MASK_SHIFT;
-  //const bool ctrl_pressed = (get_mods() | get_oneshot_mods()) & MOD_MASK_CTRL;
-  // Get layers and determine ranges where this will be active
+bool encoder_update_user(uint8_t index, bool clockwise) {
+  // Get current mod state
+  uint8_t mods = get_mods();
+  
+  // Update our encoder mod tracking
+  if (mods & (MOD_MASK_SHIFT | MOD_MASK_CTRL)) {
+      encoder_mod_active = true;
+      encoder_mod_mask = mods & (MOD_MASK_SHIFT | MOD_MASK_CTRL);
+  }
+  
+  // Get layer info
   uint8_t layer = get_highest_layer(layer_state);
-  const bool good_layers = layer > 0 && layer < 7;
-  // debug print to console
-  uprintf("Encoder turned %s on layer %d\n", clockwise ? "CW" : "CCW", layer);
-  // logic
+  const bool good_layers = (layer > _FN) && (layer < _NUM);
+  
+  // Clear any oneshot mods
+  clear_oneshot_mods();
+  
+  // Debug output
+  uprintf("Encoder turned %s on layer %d, mods: %02X\n", 
+          clockwise ? "CW" : "CCW", layer, encoder_mod_mask);
+  
+  // Check our tracked modifier state (not the current state which might be temporarily unregistered)
+  const bool shift_pressed = encoder_mod_mask & MOD_MASK_SHIFT;
+  const bool ctrl_pressed = encoder_mod_mask & MOD_MASK_CTRL;
+  
+  // Handle modifier-based behavior
   if (shift_pressed && good_layers) {
-      uprintf(" + Shift Pressed\n");
+      uprintf(" + Shift active\n");
+      
+      // Temporarily unregister shift
+      unregister_mods(MOD_MASK_SHIFT);
+      
+      // Send keycode
       if (clockwise) {
           tap_code(KC_VOLU);
       } else {
           tap_code(KC_VOLD);
       }
-      return false; // Skip encoder_map
-  } /*
+      
+      return false;
+  }
+  
   if (ctrl_pressed && good_layers) {
-      uprintf(" + Ctrl Pressed\n");
+      uprintf(" + Ctrl active\n");
+      
+      // Temporarily unregister ctrl
+      unregister_mods(MOD_MASK_CTRL);
+      
+      // Send keycode
       if (clockwise) {
           tap_code(KC_PGDN);
       } else {
           tap_code(KC_PGUP);
       }
-      return false; // Skip encoder_map
-  } */
-  // do nothing otherwise
-  return true; // Let encoder_map handle the default case
+      
+      return false;
+  }
+  
+  // Handle layer-based behavior
+  switch (layer) {
+    case _FN:
+      {
+        // Create a fake record for LAYERUP or LAYERDN
+        keyrecord_t record = {
+            .event = {
+                .key = { .col = 0, .row = 0 },
+                .pressed = true,
+                .time = (timer_read() | 1)
+            }
+        };
+        if (clockwise) {
+            process_record_user(LAYERUP, &record);
+        } else {
+            process_record_user(LAYERDN, &record);
+        }
+      }
+      break; 
+    
+    case _CAD: 
+      {
+        // Create a fake record for CAD_ARU or CAD_ARD
+        keyrecord_t record = {
+            .event = {
+                .key = { .col = 0, .row = 0 },
+                .pressed = true,
+                .time = (timer_read() | 1)
+            }
+        };
+        if (clockwise) {
+            process_record_user(CAD_ARU, &record);
+        } else {
+            process_record_user(CAD_ARD, &record);
+        }
+      }
+      break;
+      
+    case _NUM: 
+      if (clockwise) {
+          tap_code(KC_MS_WH_UP);
+      } else {
+          tap_code(KC_MS_WH_DOWN);
+      }
+      break; 
+      
+    default: // Other layers
+      if (clockwise) {
+          tap_code(KC_MS_WH_RIGHT);
+      } else {
+          tap_code(KC_MS_WH_LEFT);
+      }
+      break; 
+  }
+  
+  return false; // We've handled everything, no need for further processing
 }
 #endif // ENCODER_MAP_ENABLE
+#endif // ENCODER_ENABLE
 
 //=========
 //  MODS 
