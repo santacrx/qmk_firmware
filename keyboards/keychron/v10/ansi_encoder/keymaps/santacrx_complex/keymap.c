@@ -138,36 +138,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Add global variable to track modifier states for encoder
 static uint8_t encoder_mod_mask = 0;
 static bool encoder_mod_active = false;
-
-// Hook into QMK's matrix scanning to maintain modifier state
-void matrix_scan_user(void) {
-    // Only run this code when encoder mods are being tracked
-    if (encoder_mod_active) {
-        // Get the current physical modifier state
-        uint8_t current_mods = get_mods();
-        
-        // If encoder was used with shift and shift is still physically held
-        if ((encoder_mod_mask & MOD_MASK_SHIFT) && (current_mods & MOD_MASK_SHIFT)) {
-            // Keep encoder aware that shift is active, but don't re-register
-            encoder_mod_mask |= MOD_MASK_SHIFT;
-        } else {
-            // Shift was released, clear from our tracking
-            encoder_mod_mask &= ~MOD_MASK_SHIFT;
-        }
-        
-        // Same for CTRL
-        if ((encoder_mod_mask & MOD_MASK_CTRL) && (current_mods & MOD_MASK_CTRL)) {
-            encoder_mod_mask |= MOD_MASK_CTRL;
-        } else {
-            encoder_mod_mask &= ~MOD_MASK_CTRL;
-        }
-        
-        // If all tracked mods are released, stop tracking
-        if (encoder_mod_mask == 0) {
-            encoder_mod_active = false;
-        }
-    }
-}
+static uint16_t encoder_mod_timer = 0;
 
 // map what the rotary encoder for the knob does
 #if defined(ENCODER_ENABLE)
@@ -188,7 +159,14 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 bool encoder_update_user(uint8_t index, bool clockwise) {
   // Get current mod state
   uint8_t mods = get_mods();
-  
+
+  // Check the timer, if more than 500ms, remove active flag
+  if (timer_elapsed(encoder_mod_timer)>500) {
+    encoder_mod_active = false;
+  }
+  // Update timer
+  encoder_mod_timer = timer_read();
+
   // Update our encoder mod tracking
   if (mods & (MOD_MASK_SHIFT | MOD_MASK_CTRL)) {
       encoder_mod_active = true;
@@ -207,8 +185,8 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
           clockwise ? "CW" : "CCW", layer, encoder_mod_mask);
   
   // Check our tracked modifier state (not the current state which might be temporarily unregistered)
-  const bool shift_pressed = encoder_mod_mask & MOD_MASK_SHIFT;
-  const bool ctrl_pressed = encoder_mod_mask & MOD_MASK_CTRL;
+  const bool shift_pressed = (encoder_mod_mask & MOD_MASK_SHIFT) && encoder_mod_active;
+  const bool ctrl_pressed = (encoder_mod_mask & MOD_MASK_CTRL)  && encoder_mod_active;
   
   // Handle modifier-based behavior
   if (shift_pressed && good_layers) {
